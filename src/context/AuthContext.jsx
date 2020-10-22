@@ -67,7 +67,7 @@ export const AuthProvider = (props) => {
     setUser(null);
   }, [setUser]);
 
-  const isAuthenticated = useCallback(() => {
+  const isAuthenticated = useMemo(() => {
     return user !== null;
   }, [user]);
 

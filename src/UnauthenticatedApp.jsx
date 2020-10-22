@@ -31,34 +31,46 @@ const LoginForm = () => {
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>
-            Email
+    <div className="h-full flex items-center">
+      <div className="w-full max-w-md">
+        <form
+          className=" bg-white  rounded px-8 py-8 pt-8"
+          onSubmit={handleSubmit}
+        >
+          <div className="px-4 pb-4">
+            <label htmlFor="email" className="text-sm block font-bold  pb-2">
+              Email
+            </label>
             <input
               type="email"
               name="email"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300"
               value={form.email}
               onChange={handleInputChange}
             />
-          </label>
-        </div>
-
-        <div>
-          <label>
-            Password
+          </div>
+          <div className="px-4 pb-4">
+            <label htmlFor="password" className="text-sm block font-bold pb-2">
+              Password
+            </label>
             <input
               type="password"
               name="password"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-blue-300"
               value={form.password}
               onChange={handleInputChange}
             />
-          </label>
-        </div>
-
-        <input type="submit" value="Go Go Go" />
-      </form>
+          </div>
+          <div className="px-4">
+            <button
+              type="submit"
+              className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              Sign In
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
