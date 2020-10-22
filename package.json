@@ -6,15 +6,17 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
-    "react": "^17.0.0",
-    "react-dom": "^17.0.0",
+    "react": "^0.0.0-experimental-4ead6b530",
+    "react-dom": "^0.0.0-experimental-4ead6b530",
+    "react-relay": "^0.0.0-experimental-183bdd28",
     "react-scripts": "3.4.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "yarn run relay && react-app-rewired start",
+    "build": "yarn run relay && react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-scripts eject",
+    "relay": "yarn run relay-compiler"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -30,5 +32,13 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "babel-plugin-relay": "^10.0.1",
+    "customize-cra": "^1.0.0",
+    "graphql": "^15.3.0",
+    "react-app-rewired": "^2.1.6",
+    "relay-compiler": "^10.0.1",
+    "relay-config": "^10.0.1"
   }
 }
