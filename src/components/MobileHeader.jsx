@@ -1,16 +1,20 @@
-import { Box, Heading } from "@chakra-ui/core";
+import { Box, Heading, IconButton } from "@chakra-ui/core";
 import React from "react";
-import { MenuIcon } from "./icons/MenuIcon";
+import { FiMenu } from "react-icons/fi";
+import { zIndex } from "../theme/z-index";
 
 export const MobileHeader = (props) => {
   return (
     <Box
       as="header"
-      display="flex"
+      position="fixed"
       width="100vw"
       px={4}
       py={4}
       textAlign="center"
+      bg="white"
+      shadow="md"
+      zIndex={zIndex.MobileHeader}
     >
       {props.children}
     </Box>
@@ -32,8 +36,11 @@ export const MobileHeaderTitle = (props) => {
 
 export const MobileHeaderMenu = (props) => {
   return (
-    <Box height="40px" width="40px">
-      <MenuIcon />
-    </Box>
+    <IconButton
+      icon={FiMenu}
+      aria-label="Open main menu"
+      fontSize="30px"
+      variant="ghost"
+    />
   );
 };
