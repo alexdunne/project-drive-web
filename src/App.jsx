@@ -12,7 +12,7 @@ function App() {
 
   return (
     <Suspense fallback={<FullPageSpinner />}>
-      {isAuthenticated ? <AuthenticatedApp /> : <UnauthenticatedApp />}
+      {true ? <AuthenticatedApp /> : <UnauthenticatedApp />}
     </Suspense>
   );
 }
