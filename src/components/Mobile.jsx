@@ -1,6 +1,7 @@
 import {
   Box,
   Icon,
+  IconButton,
   Input,
   InputGroup,
   InputLeftElement,
@@ -11,6 +12,7 @@ import React, { Fragment, useState } from "react";
 import format from "date-fns/format";
 import isToday from "date-fns/isToday";
 import isTomorrow from "date-fns/isTomorrow";
+import { FiPlus } from "react-icons/fi";
 
 import {
   MobileHeader,
@@ -173,6 +175,12 @@ const Mobile = () => {
         <Box display="grid" gridTemplateColumns="40px auto 40px" width="100%">
           <MobileHeaderMenu />
           <MobileHeaderTitle>Appointments</MobileHeaderTitle>
+          <IconButton
+            icon={FiPlus}
+            aria-label="Add a new lesson"
+            fontSize="30px"
+            variant="ghost"
+          />
         </Box>
       </MobileHeader>
 
