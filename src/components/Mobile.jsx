@@ -1,3 +1,4 @@
+import { Box, Stack } from "@chakra-ui/core";
 import React, { Fragment } from "react";
 import format from "date-fns/format";
 
@@ -28,28 +29,23 @@ const schedule = [
 
 const EventSummary = (props) => {
   return (
-    <div className="bg-red-100">
-      <div>{props.event.student.name}</div>
-      <div>
+    <Box bg="red-100">
+      <Box>{props.event.student.name}</Box>
+      <Box>
         {format(props.event.startsAt, "H:mm")} -{" "}
         {format(props.event.endsAt, "H:mm")}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 
 const EventList = (props) => {
   return (
-    <div>
+    <Stack spacing={2}>
       {props.events.map((event) => {
-        return (
-          <Fragment key={event.id}>
-            <EventSummary event={event} />
-            <div className="h-4" />
-          </Fragment>
-        );
+        return <EventSummary event={event} />;
       })}
-    </div>
+    </Stack>
   );
 };
 
@@ -57,13 +53,13 @@ const Mobile = () => {
   return (
     <Fragment>
       <MobileHeader>
-        <div className="grid grid-cols-3">
+        <Box display="grid" gridTemplateColumns="40px auto 40px" width="100%">
           <MobileHeaderMenu />
           <MobileHeaderTitle>Schedule</MobileHeaderTitle>
-        </div>
+        </Box>
       </MobileHeader>
 
-      <div className="h-16" />
+      <Box h="4rem" />
 
       <EventList events={schedule} />
     </Fragment>

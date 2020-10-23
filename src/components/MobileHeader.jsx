@@ -1,24 +1,39 @@
+import { Box, Heading } from "@chakra-ui/core";
 import React from "react";
 import { MenuIcon } from "./icons/MenuIcon";
 
 export const MobileHeader = (props) => {
   return (
-    <header className="fixed w-full py-4 px-4 text-center">
+    <Box
+      as="header"
+      display="flex"
+      width="100vw"
+      px={4}
+      py={4}
+      textAlign="center"
+    >
       {props.children}
-    </header>
+    </Box>
   );
 };
 
 export const MobileHeaderTitle = (props) => {
   return (
-    <h1 className="text-2xl font-semibold text-gray-800">{props.children}</h1>
+    <Heading
+      fontSize="2xl"
+      fontWeight="semibold"
+      color="gray.800"
+      lineHeight="40px"
+    >
+      {props.children}
+    </Heading>
   );
 };
 
 export const MobileHeaderMenu = (props) => {
   return (
-    <div className="h-8 w-8">
+    <Box height="40px" width="40px">
       <MenuIcon />
-    </div>
+    </Box>
   );
 };
