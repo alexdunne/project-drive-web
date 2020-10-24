@@ -1,7 +1,8 @@
+import graphql from 'babel-plugin-relay/macro';
 import React, { useCallback, useMemo, useState } from "react";
+import {useMutation} from "react-relay/hooks"
 
 import { AuthUtils } from "../util/auth";
-const { graphql, useMutation } = require("react-relay/hooks");
 
 const AuthContext = React.createContext();
 
