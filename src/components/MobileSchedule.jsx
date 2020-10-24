@@ -7,6 +7,7 @@ import {
   InputLeftElement,
   Stack,
   Text,
+  useDisclosure,
 } from "@chakra-ui/core";
 import React, { Fragment, useState } from "react";
 import format from "date-fns/format";
@@ -19,6 +20,10 @@ import {
   MobileHeaderMenu,
   MobileHeaderTitle,
 } from "./MobileHeader";
+import { MobileLessonForm } from "./MobileLessonForm";
+import { AnimatePresence, motion } from "framer-motion";
+
+const MotionBox = motion.custom(Box);
 
 const schedule = [
   {
@@ -124,12 +129,17 @@ const EventSummary = (props) => {
 
 const EventList = (props) => {
   return (
-    <Stack spacing={6}>
+    <Stack as={AnimatePresence} spacing={6}>
       {props.events.map((event) => {
         return (
-          <Box key={event.id}>
+          <MotionBox
+            key={event.id}
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
             <EventSummary event={event} />
-          </Box>
+          </MotionBox>
         );
       })}
     </Stack>
@@ -160,6 +170,7 @@ const SearchInput = (props) => {
 };
 
 const MobileSchedule = () => {
+  const { isOpen, onClose, onOpen } = useDisclosure();
   const [searchInputValue, setSearchInputValue] = useState("");
 
   const events = schedule.filter((event) => {
@@ -179,6 +190,7 @@ const MobileSchedule = () => {
             aria-label="Add a new lesson"
             fontSize="30px"
             variant="ghost"
+            onClick={onOpen}
           />
         </Box>
       </MobileHeader>
@@ -199,6 +211,8 @@ const MobileSchedule = () => {
           <EventList events={events} />
         </Box>
       </Stack>
+
+      <MobileLessonForm isOpen={isOpen} onClose={onClose} />
     </Fragment>
   );
 };
