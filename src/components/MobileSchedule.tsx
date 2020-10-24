@@ -15,19 +15,25 @@ import isToday from "date-fns/isToday";
 import isTomorrow from "date-fns/isTomorrow";
 import { FiFile, FiCalendar, FiPlus } from "react-icons/fi";
 
-import {
-  MobileHeader,
-  MobileHeaderMenu,
-  MobileHeaderTitle,
-} from "./MobileHeader";
+import { MobileHeader, MobileHeaderMenu, MobileHeaderTitle } from "./MobileHeader";
 import { MobileLessonForm } from "./MobileLessonForm";
 import { AnimatePresence, motion } from "framer-motion";
+import { IconType } from "react-icons";
 
 const MotionBox = motion.custom(Box);
 
-const schedule = [
+interface ScheduleEvent {
+  id: string;
+  student: {
+    name: string;
+  };
+  startsAt: Date;
+  endsAt: Date;
+}
+
+const schedule: ScheduleEvent[] = [
   {
-    id: 1,
+    id: "1",
     student: {
       name: "Jon Snow",
     },
@@ -35,7 +41,7 @@ const schedule = [
     endsAt: new Date("2020-10-23T10:00Z"),
   },
   {
-    id: 2,
+    id: "2",
     student: {
       name: "Arya Stark",
     },
@@ -43,7 +49,7 @@ const schedule = [
     endsAt: new Date("2020-10-23T14:00Z"),
   },
   {
-    id: 3,
+    id: "3",
     student: {
       name: "Sansa Stark",
     },
@@ -51,7 +57,7 @@ const schedule = [
     endsAt: new Date("2020-10-24T13:00Z"),
   },
   {
-    id: 4,
+    id: "4",
     student: {
       name: "Rob Stark",
     },
@@ -60,7 +66,7 @@ const schedule = [
   },
 ];
 
-const formatEventDate = (date) => {
+const formatEventDate = (date: Date) => {
   if (isToday(date)) {
     return "Today";
   }
@@ -72,17 +78,16 @@ const formatEventDate = (date) => {
   return format(date, "eeee");
 };
 
-const EventSummaryAction = ({ color, icon, label, onClick, ...rest }) => {
+interface EventSummaryActionProps {
+  color: string;
+  icon: IconType;
+  label: string;
+  onClick: () => void;
+}
+
+const EventSummaryAction: React.FC<EventSummaryActionProps> = ({ color, icon, label, onClick, ...rest }) => {
   return (
-    <Box
-      color={`${color}.300`}
-      border="1px"
-      borderColor={`${color}.300`}
-      borderRadius="lg"
-      px={2}
-      py={1}
-      {...rest}
-    >
+    <Box color={`${color}.300`} border="1px" borderColor={`${color}.300`} borderRadius="lg" px={2} py={1} {...rest}>
       <Box as={icon} display="inline-block" mr={1} />
       <Text as="span" fontSize="sm">
         {label}
@@ -91,9 +96,12 @@ const EventSummaryAction = ({ color, icon, label, onClick, ...rest }) => {
   );
 };
 
-const EventSummary = (props) => {
-  const colors = ["cyan", "red", "purple", "green"];
-  const color = colors[props.event.id % colors.length];
+interface EventSummaryProps {
+  event: ScheduleEvent;
+}
+
+const EventSummary: React.FC<EventSummaryProps> = (props) => {
+  const color = "purple";
 
   return (
     <Box px={6} py={4} bg={`${color}.50`} borderRadius="md" shadow="sm">
@@ -110,34 +118,28 @@ const EventSummary = (props) => {
       </Box>
 
       <Text color={`${color}.700`} fontSize="sm">
-        {format(props.event.startsAt, "H:mm")} -{" "}
-        {format(props.event.endsAt, "H:mm")}
+        {format(props.event.startsAt, "H:mm")} - {format(props.event.endsAt, "H:mm")}
       </Text>
 
       <Stack isInline spacing={4} pt={4}>
-        <EventSummaryAction color={color} icon={FiFile} label="Notes" />
+        <EventSummaryAction color={color} icon={FiFile} label="Notes" onClick={() => {}} />
 
-        <EventSummaryAction
-          color={color}
-          icon={FiCalendar}
-          label="Reschedule"
-        />
+        <EventSummaryAction color={color} icon={FiCalendar} label="Reschedule" onClick={() => {}} />
       </Stack>
     </Box>
   );
 };
 
-const EventList = (props) => {
+interface EventListProps {
+  events: ScheduleEvent[];
+}
+
+const EventList: React.FC<EventListProps> = (props) => {
   return (
     <Stack as={AnimatePresence} spacing={6}>
       {props.events.map((event) => {
         return (
-          <MotionBox
-            key={event.id}
-            initial={{ opacity: 1 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
+          <MotionBox key={event.id} initial={{ opacity: 1 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <EventSummary event={event} />
           </MotionBox>
         );
@@ -146,7 +148,12 @@ const EventList = (props) => {
   );
 };
 
-const SearchInput = (props) => {
+interface SearchInputProps {
+  value: string;
+  onChange: (value: string) => void;
+}
+
+const SearchInput: React.FC<SearchInputProps> = (props) => {
   return (
     <InputGroup>
       <InputLeftElement height="100%">
@@ -163,7 +170,9 @@ const SearchInput = (props) => {
         px={6}
         py={6}
         value={props.value}
-        onChange={props.onChange}
+        onChange={(e: React.FormEvent<HTMLInputElement>) => {
+          props.onChange(e.currentTarget.value);
+        }}
       />
     </InputGroup>
   );
@@ -174,9 +183,7 @@ const MobileSchedule = () => {
   const [searchInputValue, setSearchInputValue] = useState("");
 
   const events = schedule.filter((event) => {
-    return event.student.name
-      .toLowerCase()
-      .includes(searchInputValue.toLowerCase());
+    return event.student.name.toLowerCase().includes(searchInputValue.toLowerCase());
   });
 
   return (
@@ -185,13 +192,7 @@ const MobileSchedule = () => {
         <Box display="grid" gridTemplateColumns="40px auto 40px" width="100%">
           <MobileHeaderMenu />
           <MobileHeaderTitle>Appointments</MobileHeaderTitle>
-          <IconButton
-            icon={FiPlus}
-            aria-label="Add a new lesson"
-            fontSize="30px"
-            variant="ghost"
-            onClick={onOpen}
-          />
+          <IconButton icon={FiPlus} aria-label="Add a new lesson" fontSize="30px" variant="ghost" onClick={onOpen} />
         </Box>
       </MobileHeader>
 
@@ -199,12 +200,7 @@ const MobileSchedule = () => {
 
       <Stack spacing={8} px={4} pb={4}>
         <Box shadow="sm">
-          <SearchInput
-            value={searchInputValue}
-            onChange={(e) => {
-              setSearchInputValue(e.target.value);
-            }}
-          />
+          <SearchInput value={searchInputValue} onChange={setSearchInputValue} />
         </Box>
 
         <Box>

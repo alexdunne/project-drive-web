@@ -4,7 +4,7 @@ import { FormControl, FormLabel, Input } from "@chakra-ui/core";
 
 import { useAuth } from "../context/AuthContext";
 
-export const Login = () => {
+export const Login: React.FC = () => {
   const { login } = useAuth();
 
   const [form, setForm] = useState({
@@ -12,32 +12,27 @@ export const Login = () => {
     password: "TestPassword1",
   });
 
-  const handleInputChange = (e) => {
-    const target = e.target;
+  const handleInputChange = (e: React.FormEvent<HTMLInputElement>) => {
+    const target = e.currentTarget;
 
     setForm((form) => {
       return {
-        form,
+        ...form,
         [target.name]: target.value,
       };
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     login(form);
   };
 
   return (
-    <Box
-      height="100vh"
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-    >
+    <Box height="100vh" display="flex" justifyContent="center" alignItems="center">
       <Box width="100%" maxWidth="28rem">
-        <Box bg="white" rounded px={4} py={4} pt={4}>
+        <Box bg="white" rounded="md" px={4} py={4} pt={4}>
           <form onSubmit={handleSubmit}>
             <Stack spacing={4} px={4}>
               <FormControl>

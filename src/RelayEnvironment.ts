@@ -1,10 +1,10 @@
-import { Environment, Network, RecordSource, Store } from "relay-runtime";
+import { Environment, Network, RecordSource, Store, Variables, RequestParameters } from "relay-runtime";
 import { AuthUtils } from "./util/auth";
 
-async function fetchQuery(params, variables) {
+async function fetchQuery(operation: RequestParameters, variables: Variables) {
   const token = AuthUtils.getAuthToken();
 
-  const headers = { "Content-Type": "application/json" };
+  const headers: HeadersInit = { "Content-Type": "application/json" };
 
   if (token) {
     headers.Authorization = `Bearer ${token}`;
@@ -14,7 +14,7 @@ async function fetchQuery(params, variables) {
     method: "POST",
     headers: headers,
     body: JSON.stringify({
-      query: params.text,
+      query: operation.text,
       variables,
     }),
   });

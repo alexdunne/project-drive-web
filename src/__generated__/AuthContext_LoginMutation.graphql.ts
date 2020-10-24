@@ -1,41 +1,35 @@
-/**
- * @flow
- */
-
+/* tslint:disable */
 /* eslint-disable */
+// @ts-nocheck
 
-'use strict';
+import { ConcreteRequest } from "relay-runtime";
+export type LoginInput = {
+    email: string;
+    password: string;
+};
+export type AuthContext_LoginMutationVariables = {
+    input: LoginInput;
+};
+export type AuthContext_LoginMutationResponse = {
+    readonly login: {
+        readonly token: string;
+        readonly user: {
+            readonly id: string;
+        } | null;
+    } | null;
+};
+export type AuthContext_LoginMutation = {
+    readonly response: AuthContext_LoginMutationResponse;
+    readonly variables: AuthContext_LoginMutationVariables;
+};
 
-/*::
-import type { ConcreteRequest } from 'relay-runtime';
-export type RegisterInput = {|
-  email: string,
-  name: string,
-  password: string,
-|};
-export type AuthContext_RegisterMutationVariables = {|
-  input: RegisterInput
-|};
-export type AuthContext_RegisterMutationResponse = {|
-  +register: ?{|
-    +token: ?string,
-    +user: ?{|
-      +id: ?string
-    |},
-  |}
-|};
-export type AuthContext_RegisterMutation = {|
-  variables: AuthContext_RegisterMutationVariables,
-  response: AuthContext_RegisterMutationResponse,
-|};
-*/
 
 
 /*
-mutation AuthContext_RegisterMutation(
-  $input: RegisterInput!
+mutation AuthContext_LoginMutation(
+  $input: LoginInput!
 ) {
-  register(input: $input) {
+  login(input: $input) {
     token
     user {
       id
@@ -44,7 +38,7 @@ mutation AuthContext_RegisterMutation(
 }
 */
 
-const node/*: ConcreteRequest*/ = (function(){
+const node: ConcreteRequest = (function(){
 var v0 = [
   {
     "defaultValue": null,
@@ -64,7 +58,7 @@ v1 = [
     ],
     "concreteType": "AuthPayload",
     "kind": "LinkedField",
-    "name": "register",
+    "name": "login",
     "plural": false,
     "selections": [
       {
@@ -101,7 +95,7 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
-    "name": "AuthContext_RegisterMutation",
+    "name": "AuthContext_LoginMutation",
     "selections": (v1/*: any*/),
     "type": "RootMutationType",
     "abstractKey": null
@@ -110,20 +104,18 @@ return {
   "operation": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
-    "name": "AuthContext_RegisterMutation",
+    "name": "AuthContext_LoginMutation",
     "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "e629066beee89c19b497a67a200ad8b3",
+    "cacheID": "eb6ce280facb9d98d460e78560bc337f",
     "id": null,
     "metadata": {},
-    "name": "AuthContext_RegisterMutation",
+    "name": "AuthContext_LoginMutation",
     "operationKind": "mutation",
-    "text": "mutation AuthContext_RegisterMutation(\n  $input: RegisterInput!\n) {\n  register(input: $input) {\n    token\n    user {\n      id\n    }\n  }\n}\n"
+    "text": "mutation AuthContext_LoginMutation(\n  $input: LoginInput!\n) {\n  login(input: $input) {\n    token\n    user {\n      id\n    }\n  }\n}\n"
   }
 };
 })();
-// prettier-ignore
-(node/*: any*/).hash = 'b27963588e82bc094d5dfc04e1d1326f';
-
-module.exports = node;
+(node as any).hash = '91201f73afd258448272942876205ad2';
+export default node;

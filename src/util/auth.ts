@@ -4,7 +4,7 @@ export const AuthUtils = {
   getAuthToken: () => {
     return window.localStorage.getItem(AUTH_TOKEN_STORAGE_KEY);
   },
-  setAuthToken: (token) => {
+  setAuthToken: (token: string) => {
     window.localStorage.setItem(AUTH_TOKEN_STORAGE_KEY, token);
   },
   logout: () => {
