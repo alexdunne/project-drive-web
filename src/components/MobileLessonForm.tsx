@@ -1,7 +1,7 @@
-import { Button, FormControl, FormLabel, Input, Stack } from "@chakra-ui/core";
-import { motion, AnimatePresence } from "framer-motion";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import Sheet, { SheetRef } from "react-modal-sheet";
+import { Button, FormControl, FormLabel, Input, Stack } from '@chakra-ui/core';
+import { AnimatePresence, motion } from 'framer-motion';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import Sheet, { SheetRef } from 'react-modal-sheet';
 
 interface MobileLessonFormProps {
   isOpen: boolean;
@@ -35,7 +35,13 @@ export const MobileLessonForm: React.FC<MobileLessonFormProps> = (props) => {
   const FormComponent = steps[step];
 
   return (
-    <Sheet ref={sheetRef} isOpen={props.isOpen} onClose={props.onClose} snapPoints={[300, 200]} initialSnap={0}>
+    <Sheet
+      ref={sheetRef}
+      isOpen={props.isOpen}
+      onClose={props.onClose}
+      snapPoints={[300, 200]}
+      initialSnap={0}
+    >
       {/*  @ts-ignore */}
       <Sheet.Container>
         <Sheet.Content>
@@ -74,9 +80,9 @@ interface LessonTimeFormProps {
 
 const LessonTimeForm: React.FC<LessonTimeFormProps> = (props) => {
   const [form, setForm] = useState<LessonTimeFormValues>({
-    date: "test",
-    startTime: "test",
-    endTime: "test",
+    date: 'test',
+    startTime: 'test',
+    endTime: 'test',
   });
 
   const handleInputChange = (e: React.FormEvent<HTMLInputElement>) => {
@@ -147,8 +153,8 @@ const LessonTimeForm: React.FC<LessonTimeFormProps> = (props) => {
             variantColor="blue"
             border="none"
             _focus={{
-              outline: "none",
-              boxShadow: "md",
+              outline: 'none',
+              boxShadow: 'md',
             }}
           >
             Next
@@ -169,7 +175,7 @@ interface StudentSelectionFormProps {
 
 const StudentSelectionForm: React.FC<StudentSelectionFormProps> = (props) => {
   const [form, setForm] = useState({
-    student: "test",
+    student: 'test',
   });
 
   const handleInputChange = (e: React.FormEvent<HTMLInputElement>) => {
@@ -212,8 +218,8 @@ const StudentSelectionForm: React.FC<StudentSelectionFormProps> = (props) => {
             variantColor="blue"
             border="none"
             _focus={{
-              outline: "none",
-              boxShadow: "md",
+              outline: 'none',
+              boxShadow: 'md',
             }}
           >
             Next

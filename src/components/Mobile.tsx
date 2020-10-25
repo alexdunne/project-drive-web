@@ -1,10 +1,10 @@
-import React, { Fragment, Suspense } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import React, { Fragment, Suspense } from 'react';
+import { BrowserRouter as Router, Link, Route, Routes } from 'react-router-dom';
 
-import { FullPageSpinner } from "./FullPageSpinner";
-import { Todo } from "./Todo";
+import { FullPageSpinner } from './FullPageSpinner';
+import { Todo } from './Todo';
 
-const MobileSchedule = React.lazy(() => import("./MobileSchedule"));
+const MobileSchedule = React.lazy(() => import('./MobileSchedule'));
 
 const Mobile = () => {
   return (

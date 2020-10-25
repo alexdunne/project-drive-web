@@ -1,0 +1,17 @@
+{
+  "plugins": ["relay", "simple-import-sort"],
+  "extends": ["react-app", "plugin:relay/recommended", "prettier"],
+  "rules": {
+    "simple-import-sort/sort": "error",
+
+    // We're using TS not Flow
+    "relay/generated-flow-types": "off"
+  },
+  "overrides": [
+    {
+      // TypeScript only rules
+      "files": ["**/*.ts?(x)"],
+      "rules": {}
+    }
+  ]
+}

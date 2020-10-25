@@ -1,10 +1,10 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { useMutation, graphql } from "react-relay/hooks";
-import { RuntimeError } from "../error/BaseErrors";
+import React, { useCallback, useMemo, useState } from 'react';
+import { graphql, useMutation } from 'react-relay/hooks';
 
-import { AuthUtils } from "../util/auth";
-import { AuthContext_LoginMutation } from "../__generated__/AuthContext_LoginMutation.graphql";
-import { AuthContext_RegisterMutation } from "../__generated__/AuthContext_RegisterMutation.graphql";
+import { AuthContext_LoginMutation } from '../__generated__/AuthContext_LoginMutation.graphql';
+import { AuthContext_RegisterMutation } from '../__generated__/AuthContext_RegisterMutation.graphql';
+import { RuntimeError } from '../error/BaseErrors';
+import { AuthUtils } from '../util/auth';
 
 interface User {
   id: string;
@@ -63,8 +63,8 @@ export const AuthProvider: React.FC = (props) => {
         onCompleted(data) {
           if (!data.login?.user) {
             throw new RuntimeError(
-              "Something went wrong when attempting to log in",
-              "No user was returned from the query"
+              'Something went wrong when attempting to log in',
+              'No user was returned from the query'
             );
           }
 
@@ -84,8 +84,8 @@ export const AuthProvider: React.FC = (props) => {
         onCompleted(data) {
           if (!data.register?.user) {
             throw new RuntimeError(
-              "Something went wrong when attempting to log in",
-              "No user was returned from the query"
+              'Something went wrong when attempting to log in',
+              'No user was returned from the query'
             );
           }
 
@@ -118,7 +118,7 @@ export const useAuth = () => {
   const context = React.useContext(AuthContext);
 
   if (context === undefined) {
-    throw new Error("useAuth must be used within a AuthProvider");
+    throw new Error('useAuth must be used within a AuthProvider');
   }
 
   return context;

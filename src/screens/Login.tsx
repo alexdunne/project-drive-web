@@ -1,15 +1,15 @@
-import React, { useState } from "react";
-import { Box, Button, Stack } from "@chakra-ui/core";
-import { FormControl, FormLabel, Input } from "@chakra-ui/core";
+import { Box, Button, Stack } from '@chakra-ui/core';
+import { FormControl, FormLabel, Input } from '@chakra-ui/core';
+import React, { useState } from 'react';
 
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from '../context/AuthContext';
 
 export const Login: React.FC = () => {
   const { login } = useAuth();
 
   const [form, setForm] = useState({
-    email: "hi+i@alexdunne.net",
-    password: "password",
+    email: 'hi+i@alexdunne.net',
+    password: 'password',
   });
 
   const handleInputChange = (e: React.FormEvent<HTMLInputElement>) => {
@@ -67,8 +67,8 @@ export const Login: React.FC = () => {
                 variantColor="blue"
                 border="none"
                 _focus={{
-                  outline: "none",
-                  boxShadow: "md",
+                  outline: 'none',
+                  boxShadow: 'md',
                 }}
               >
                 Sign In

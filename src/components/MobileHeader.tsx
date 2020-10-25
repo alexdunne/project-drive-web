@@ -1,7 +1,8 @@
-import { Box, Heading, IconButton } from "@chakra-ui/core";
-import React from "react";
-import { FiMenu } from "react-icons/fi";
-import { zIndex } from "../theme/z-index";
+import { Box, Heading, IconButton } from '@chakra-ui/core';
+import React from 'react';
+import { FiMenu } from 'react-icons/fi';
+
+import { zIndex } from '../theme/z-index';
 
 export const MobileHeader: React.FC = (props) => {
   return (

@@ -1,9 +1,9 @@
-import React from "react";
-import { ThemeProvider, CSSReset } from "@chakra-ui/core";
+import { CSSReset, ThemeProvider } from '@chakra-ui/core';
+import React from 'react';
+import { RelayEnvironmentProvider } from 'react-relay/hooks';
 
-import { AuthProvider } from "./context/AuthContext";
-import { RelayEnvironment } from "./RelayEnvironment";
-import { RelayEnvironmentProvider } from "react-relay/hooks";
+import { AuthProvider } from './context/AuthContext';
+import { RelayEnvironment } from './RelayEnvironment';
 
 export const AppProviders: React.FC = ({ children }) => {
   return (

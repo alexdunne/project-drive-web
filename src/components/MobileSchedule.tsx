@@ -9,28 +9,28 @@ import {
   Stack,
   Text,
   useDisclosure,
-} from "@chakra-ui/core";
-import React, { Fragment, useMemo, useState } from "react";
-import format from "date-fns/format";
-import isToday from "date-fns/isToday";
-import isTomorrow from "date-fns/isTomorrow";
-import { FiFile, FiCalendar, FiPlus } from "react-icons/fi";
-import { AnimatePresence, motion } from "framer-motion";
-import { IconType } from "react-icons";
-import { useFragment, useLazyLoadQuery, usePaginationFragment, graphql } from "react-relay/hooks";
+} from '@chakra-ui/core';
+import format from 'date-fns/format';
+import isToday from 'date-fns/isToday';
+import isTomorrow from 'date-fns/isTomorrow';
+import { AnimatePresence, motion } from 'framer-motion';
+import React, { Fragment, useMemo, useState } from 'react';
+import { IconType } from 'react-icons';
+import { FiCalendar, FiFile, FiPlus } from 'react-icons/fi';
+import { graphql, useFragment, useLazyLoadQuery, usePaginationFragment } from 'react-relay/hooks';
 
-import { MobileHeader, MobileHeaderMenu, MobileHeaderTitle } from "./MobileHeader";
-import { MobileLessonForm } from "./MobileLessonForm";
-import { MobileScheduleQuery } from "../__generated__/MobileScheduleQuery.graphql";
-import { MobileSchedule_EventList_events$key } from "../__generated__/MobileSchedule_EventList_events.graphql";
-import { MobileSchedule_EventSummary_events$key } from "../__generated__/MobileSchedule_EventSummary_events.graphql";
-import { Todo } from "./Todo";
+import { MobileSchedule_EventList_events$key } from '../__generated__/MobileSchedule_EventList_events.graphql';
+import { MobileSchedule_EventSummary_events$key } from '../__generated__/MobileSchedule_EventSummary_events.graphql';
+import { MobileScheduleQuery } from '../__generated__/MobileScheduleQuery.graphql';
+import { MobileHeader, MobileHeaderMenu, MobileHeaderTitle } from './MobileHeader';
+import { MobileLessonForm } from './MobileLessonForm';
+import { Todo } from './Todo';
 
 const MotionBox = motion.custom(Box);
 
 const MobileSchedule = () => {
   const { isOpen, onClose, onOpen } = useDisclosure();
-  const [searchInputValue, setSearchInputValue] = useState("");
+  const [searchInputValue, setSearchInputValue] = useState('');
 
   const events = useLazyLoadQuery<MobileScheduleQuery>(
     graphql`
@@ -47,7 +47,13 @@ const MobileSchedule = () => {
         <Box display="grid" gridTemplateColumns="40px auto 40px" width="100%">
           <MobileHeaderMenu />
           <MobileHeaderTitle>Appointments</MobileHeaderTitle>
-          <IconButton icon={FiPlus} aria-label="Add a new lesson" fontSize="30px" variant="ghost" onClick={onOpen} />
+          <IconButton
+            icon={FiPlus}
+            aria-label="Add a new lesson"
+            fontSize="30px"
+            variant="ghost"
+            onClick={onOpen}
+          />
         </Box>
       </MobileHeader>
 
@@ -135,7 +141,12 @@ const EventList: React.FC<EventListProps> = (props) => {
         }
 
         return (
-          <MotionBox key={event.id} initial={{ opacity: 1 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <MotionBox
+            key={event.id}
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
             <EventSummary event={event} />
           </MotionBox>
         );
@@ -167,17 +178,17 @@ const EventSummary: React.FC<EventSummaryProps> = (props) => {
   const startsAt = useMemo(() => new Date(event.startsAt), [event]);
   const endsAt = useMemo(() => new Date(event.endsAt), [event]);
 
-  const color = "purple";
+  const color = 'purple';
   const formattedEventDate = useMemo(() => {
     if (isToday(startsAt)) {
-      return "Today";
+      return 'Today';
     }
 
     if (isTomorrow(startsAt)) {
-      return "Tomorrow";
+      return 'Tomorrow';
     }
 
-    return format(startsAt, "eeee");
+    return format(startsAt, 'eeee');
   }, [startsAt]);
 
   return (
@@ -195,7 +206,7 @@ const EventSummary: React.FC<EventSummaryProps> = (props) => {
       </Box>
 
       <Text color={`${color}.700`} fontSize="sm">
-        {format(startsAt, "H:mm")} - {format(endsAt, "H:mm")}
+        {format(startsAt, 'H:mm')} - {format(endsAt, 'H:mm')}
       </Text>
 
       <Stack isInline spacing={4} pt={4}>
@@ -214,9 +225,23 @@ interface EventSummaryActionProps {
   onClick: () => void;
 }
 
-const EventSummaryAction: React.FC<EventSummaryActionProps> = ({ color, icon, label, onClick, ...rest }) => {
+const EventSummaryAction: React.FC<EventSummaryActionProps> = ({
+  color,
+  icon,
+  label,
+  onClick,
+  ...rest
+}) => {
   return (
-    <Box color={`${color}.300`} border="1px" borderColor={`${color}.300`} borderRadius="lg" px={2} py={1} {...rest}>
+    <Box
+      color={`${color}.300`}
+      border="1px"
+      borderColor={`${color}.300`}
+      borderRadius="lg"
+      px={2}
+      py={1}
+      {...rest}
+    >
       <Box as={icon} display="inline-block" mr={1} />
       <Text as="span" fontSize="sm">
         {label}
