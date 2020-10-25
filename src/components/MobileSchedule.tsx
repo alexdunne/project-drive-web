@@ -1,11 +1,12 @@
 import {
   Box,
-  Button,
   Icon,
   IconButton,
   Input,
   InputGroup,
   InputLeftElement,
+  List,
+  ListItem,
   Stack,
   Text,
   useDisclosure,
@@ -13,8 +14,7 @@ import {
 import format from 'date-fns/format';
 import isToday from 'date-fns/isToday';
 import isTomorrow from 'date-fns/isTomorrow';
-import { AnimatePresence, motion } from 'framer-motion';
-import React, { Fragment, useMemo, useState } from 'react';
+import React, { Fragment, Suspense, useEffect, useMemo, useState } from 'react';
 import { IconType } from 'react-icons';
 import { FiCalendar, FiFile, FiPlus } from 'react-icons/fi';
 import { graphql, useFragment, useLazyLoadQuery, usePaginationFragment } from 'react-relay/hooks';
@@ -25,9 +25,6 @@ import { MobileScheduleQuery } from '../__generated__/MobileScheduleQuery.graphq
 import { useDebounce } from '../hooks/useDebounce';
 import { MobileHeader, MobileHeaderMenu, MobileHeaderTitle } from './MobileHeader';
 import { MobileLessonForm } from './MobileLessonForm';
-import { Todo } from './Todo';
-
-const MotionBox = motion.custom(Box);
 
 const MobileSchedule = () => {
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -41,9 +38,7 @@ const MobileSchedule = () => {
         ...MobileSchedule_EventList_events @arguments(searchTerm: $searchTerm)
       }
     `,
-    {
-      searchTerm: deferredSearchTerm,
-    }
+    {}
   );
 
   return (
@@ -70,7 +65,9 @@ const MobileSchedule = () => {
         </Box>
 
         <Box>
-          <EventList events={events} />
+          <Suspense fallback={<p>Fetching events</p>}>
+            <EventList events={events} searchTerm={deferredSearchTerm} />
+          </Suspense>
         </Box>
       </Stack>
 
@@ -111,10 +108,11 @@ const SearchInput: React.FC<SearchInputProps> = (props) => {
 
 interface EventListProps {
   events: MobileSchedule_EventList_events$key;
+  searchTerm?: string;
 }
 
 const EventList: React.FC<EventListProps> = (props) => {
-  const { data, loadNext } = usePaginationFragment(
+  const { data, refetch } = usePaginationFragment(
     graphql`
       fragment MobileSchedule_EventList_events on RootQueryType
       @argumentDefinitions(
@@ -137,13 +135,13 @@ const EventList: React.FC<EventListProps> = (props) => {
     props.events
   );
 
-  if (!data.events?.edges) {
-    return <Todo>Implement empty events</Todo>;
-  }
+  useEffect(() => {
+    refetch({ first: 10, searchTerm: props.searchTerm });
+  }, [refetch, props.searchTerm]);
 
   return (
-    <Stack as={AnimatePresence} spacing={6}>
-      {data.events?.edges.map((edge) => {
+    <List listStyleType="none" spacing={6}>
+      {(data.events?.edges ?? []).map((edge) => {
         const event = edge?.node;
 
         if (!event) {
@@ -151,19 +149,12 @@ const EventList: React.FC<EventListProps> = (props) => {
         }
 
         return (
-          <MotionBox
-            key={event.id}
-            initial={{ opacity: 1 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
+          <ListItem key={event.id}>
             <EventSummary event={event} />
-          </MotionBox>
+          </ListItem>
         );
       })}
-
-      <Button onClick={() => loadNext(1)}>Load more</Button>
-    </Stack>
+    </List>
   );
 };
 
