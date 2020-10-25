@@ -1,3 +1,4 @@
+$ /Users/alexdunne/Projects/personal/project-drive/project-drive-web/node_modules/.bin/get-graphql-schema http://localhost:4000/api
 schema {
   query: RootQueryType
   mutation: RootMutationType
@@ -132,7 +133,7 @@ type RootMutationType {
 }
 
 type RootQueryType {
-  events(after: String, before: String, first: Int, last: Int): EventConnection
+  events(after: String, before: String, first: Int, last: Int, searchTerm: String): EventConnection
   node(
     """The id of an object."""
     id: ID!

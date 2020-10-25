@@ -22,6 +22,7 @@ import { graphql, useFragment, useLazyLoadQuery, usePaginationFragment } from 'r
 import { MobileSchedule_EventList_events$key } from '../__generated__/MobileSchedule_EventList_events.graphql';
 import { MobileSchedule_EventSummary_events$key } from '../__generated__/MobileSchedule_EventSummary_events.graphql';
 import { MobileScheduleQuery } from '../__generated__/MobileScheduleQuery.graphql';
+import { useDebounce } from '../hooks/useDebounce';
 import { MobileHeader, MobileHeaderMenu, MobileHeaderTitle } from './MobileHeader';
 import { MobileLessonForm } from './MobileLessonForm';
 import { Todo } from './Todo';
@@ -32,13 +33,17 @@ const MobileSchedule = () => {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [searchInputValue, setSearchInputValue] = useState('');
 
+  const deferredSearchTerm = useDebounce(searchInputValue, 250);
+
   const events = useLazyLoadQuery<MobileScheduleQuery>(
     graphql`
-      query MobileScheduleQuery {
-        ...MobileSchedule_EventList_events
+      query MobileScheduleQuery($searchTerm: String) {
+        ...MobileSchedule_EventList_events @arguments(searchTerm: $searchTerm)
       }
     `,
-    {}
+    {
+      searchTerm: deferredSearchTerm,
+    }
   );
 
   return (
@@ -112,9 +117,14 @@ const EventList: React.FC<EventListProps> = (props) => {
   const { data, loadNext } = usePaginationFragment(
     graphql`
       fragment MobileSchedule_EventList_events on RootQueryType
-      @argumentDefinitions(count: { type: "Int", defaultValue: 1 }, cursor: { type: "String" })
+      @argumentDefinitions(
+        count: { type: "Int", defaultValue: 10 }
+        cursor: { type: "String" }
+        searchTerm: { type: "String" }
+      )
       @refetchable(queryName: "EventListPaginationQuery") {
-        events(first: $count, after: $cursor) @connection(key: "EventList_events") {
+        events(first: $count, after: $cursor, searchTerm: $searchTerm)
+          @connection(key: "EventList_events", filters: ["searchTerm"]) {
           edges {
             node {
               id
