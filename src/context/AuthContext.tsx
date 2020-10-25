@@ -1,6 +1,5 @@
-import graphql from "babel-plugin-relay/macro";
 import React, { useCallback, useMemo, useState } from "react";
-import { useMutation } from "react-relay/hooks";
+import { useMutation, graphql } from "react-relay/hooks";
 import { RuntimeError } from "../error/BaseErrors";
 
 import { AuthUtils } from "../util/auth";

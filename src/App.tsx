@@ -2,9 +2,7 @@ import React, { Suspense } from "react";
 import { FullPageSpinner } from "./components/FullPageSpinner";
 import { useAuth } from "./context/AuthContext";
 
-const AuthenticatedApp = React.lazy(() =>
-  import(/* webpackPrefetch: true */ "./AuthenticatedApp")
-);
+const AuthenticatedApp = React.lazy(() => import(/* webpackPrefetch: true */ "./AuthenticatedApp"));
 const UnauthenticatedApp = React.lazy(() => import("./UnauthenticatedApp"));
 
 function App() {
@@ -12,7 +10,7 @@ function App() {
 
   return (
     <Suspense fallback={<FullPageSpinner />}>
-      {true ? <AuthenticatedApp /> : <UnauthenticatedApp />}
+      {isAuthenticated ? <AuthenticatedApp /> : <UnauthenticatedApp />}
     </Suspense>
   );
 }

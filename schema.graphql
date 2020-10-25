@@ -51,6 +51,16 @@ type Event implements Node {
   type: EventType!
 }
 
+type EventConnection {
+  edges: [EventEdge]
+  pageInfo: PageInfo!
+}
+
+type EventEdge {
+  cursor: String
+  node: Event
+}
+
 enum EventType {
   """Lesson event type"""
   LESSON
@@ -64,6 +74,20 @@ input LoginInput {
 interface Node {
   """The id of the object."""
   id: ID!
+}
+
+type PageInfo {
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
 }
 
 input RegisterInput {
@@ -108,20 +132,26 @@ type RootMutationType {
 }
 
 type RootQueryType {
+  events(after: String, before: String, first: Int, last: Int): EventConnection
   node(
     """The id of an object."""
     id: ID!
   ): Node
 }
 
-type Student {
+type Student implements Node {
   email: String!
+
+  """The ID of an object"""
   id: ID!
   name: String!
 }
 
-type StudentInvite {
+type StudentInvite implements Node {
   email: String!
+
+  """The ID of an object"""
+  id: ID!
   name: String!
 }
 

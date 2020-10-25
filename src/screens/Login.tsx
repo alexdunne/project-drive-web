@@ -9,7 +9,7 @@ export const Login: React.FC = () => {
 
   const [form, setForm] = useState({
     email: "hi+i@alexdunne.net",
-    password: "TestPassword1",
+    password: "password",
   });
 
   const handleInputChange = (e: React.FormEvent<HTMLInputElement>) => {
