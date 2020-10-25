@@ -1,16 +1,4 @@
-import {
-  Box,
-  Icon,
-  IconButton,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  List,
-  ListItem,
-  Stack,
-  Text,
-  useDisclosure,
-} from '@chakra-ui/core';
+import { Box, IconButton, List, ListItem, Stack, Text, useDisclosure } from '@chakra-ui/core';
 import format from 'date-fns/format';
 import isToday from 'date-fns/isToday';
 import isTomorrow from 'date-fns/isTomorrow';
@@ -25,6 +13,7 @@ import { MobileScheduleQuery } from '../__generated__/MobileScheduleQuery.graphq
 import { useDebounce } from '../hooks/useDebounce';
 import { MobileHeader, MobileHeaderMenu, MobileHeaderTitle } from './MobileHeader';
 import { MobileLessonForm } from './MobileLessonForm';
+import { MobileSearchInput } from './MobileSeachInput';
 
 const MobileSchedule = () => {
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -61,7 +50,7 @@ const MobileSchedule = () => {
 
       <Stack spacing={8} px={4} pb={4}>
         <Box shadow="sm">
-          <SearchInput value={searchInputValue} onChange={setSearchInputValue} />
+          <MobileSearchInput value={searchInputValue} onChange={setSearchInputValue} />
         </Box>
 
         <Box>
@@ -73,36 +62,6 @@ const MobileSchedule = () => {
 
       <MobileLessonForm isOpen={isOpen} onClose={onClose} />
     </Fragment>
-  );
-};
-
-interface SearchInputProps {
-  value: string;
-  onChange: (value: string) => void;
-}
-
-const SearchInput: React.FC<SearchInputProps> = (props) => {
-  return (
-    <InputGroup>
-      <InputLeftElement height="100%">
-        <Icon name="search" color="blue.700" />
-      </InputLeftElement>
-      <Input
-        type="text"
-        variant="filled"
-        placeholder="Search"
-        aria-label="Search your schedule"
-        borderRadius="md"
-        bg="gray.50"
-        color="gray.700"
-        px={6}
-        py={6}
-        value={props.value}
-        onChange={(e: React.FormEvent<HTMLInputElement>) => {
-          props.onChange(e.currentTarget.value);
-        }}
-      />
-    </InputGroup>
   );
 };
 

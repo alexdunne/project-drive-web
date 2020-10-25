@@ -22,9 +22,7 @@ const Mobile = () => {
                 </Fragment>
               }
             />
-            <Suspense fallback={<p>Waiting for results</p>}>
-              <Route path="/schedule" element={<MobileSchedule />} />
-            </Suspense>
+            <Route path="/schedule" element={<MobileSchedule />} />
           </Routes>
         </Router>
       </Suspense>
