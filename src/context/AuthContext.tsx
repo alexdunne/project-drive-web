@@ -72,6 +72,9 @@ export const AuthProvider: React.FC = (props) => {
 
           setUser(data.login.user);
         },
+        onError(e) {
+          alert(e);
+        },
       });
     },
     [loginCommit, setUser]

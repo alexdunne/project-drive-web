@@ -1,10 +1,10 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-import App from "./App";
-import { AppProviders } from "./AppProviders";
+import App from './App';
+import { AppProviders } from './AppProviders';
 
-const root = document.getElementById("root") as HTMLElement;
+const root = document.getElementById('root') as HTMLElement;
 
 ReactDOM.unstable_createRoot(root).render(
   <React.StrictMode>

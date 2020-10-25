@@ -1,7 +1,10 @@
-import { Button, FormControl, FormLabel, Input, Stack } from '@chakra-ui/core';
+import { Button, FormControl, FormErrorMessage, FormLabel, Input, Stack } from '@chakra-ui/core';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import Sheet, { SheetRef } from 'react-modal-sheet';
+import * as yup from 'yup';
 
 interface MobileLessonFormProps {
   isOpen: boolean;
@@ -68,82 +71,85 @@ const AnimatedWrapper: React.FC = (props) => {
   );
 };
 
-interface LessonTimeFormValues {
-  date: string;
-  startTime: string;
-  endTime: string;
+const lessonTimeFormSchema = yup.object().shape({
+  date: yup.date().required(),
+  startTime: yup.date().required(),
+  endTime: yup.date().required(),
+});
+
+interface LessonTimeFormInputs {
+  date: Date;
+  startTime: Date;
+  endTime: Date;
 }
 
 interface LessonTimeFormProps {
-  handleSubmit: (form: LessonTimeFormValues) => void;
+  handleSubmit: (form: LessonTimeFormInputs) => void;
 }
 
 const LessonTimeForm: React.FC<LessonTimeFormProps> = (props) => {
-  const [form, setForm] = useState<LessonTimeFormValues>({
-    date: 'test',
-    startTime: 'test',
-    endTime: 'test',
+  const { register, handleSubmit, errors, formState, getValues } = useForm<LessonTimeFormInputs>({
+    resolver: yupResolver(lessonTimeFormSchema),
+    defaultValues: {
+      date: new Date(),
+      startTime: new Date(),
+      endTime: new Date(),
+    },
   });
 
-  const handleInputChange = (e: React.FormEvent<HTMLInputElement>) => {
-    const target = e.currentTarget;
+  console.log(getValues());
 
-    setForm((form) => {
-      return {
-        ...form,
-        [target.name]: target.value,
-      };
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    props.handleSubmit(form);
+  const onSubmit = (data: LessonTimeFormInputs) => {
+    console.log('hello');
+    console.log(data);
   };
 
   return (
     <AnimatedWrapper key="lesson_time_form">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={4} px={4} pt={4}>
-          <FormControl>
+          <FormControl isInvalid={Boolean(errors.date)}>
             <FormLabel htmlFor="date">Date</FormLabel>
+
             <Input
-              type="text"
+              ref={register()}
+              type="date"
               id="date"
               name="date"
               width="100%"
               variant="outline"
-              value={form.date}
-              onChange={handleInputChange}
             />
+
+            <FormErrorMessage>{errors.date && errors.date.message}</FormErrorMessage>
           </FormControl>
 
           <Stack isInline justifyContent="space-around">
-            <FormControl>
+            <FormControl isInvalid={Boolean(errors.startTime)}>
               <FormLabel htmlFor="startTime">Start</FormLabel>
               <Input
-                type="text"
+                ref={register()}
+                type="time"
                 id="startTime"
                 name="startTime"
                 width="100%"
                 variant="outline"
-                value={form.startTime}
-                onChange={handleInputChange}
               />
+
+              <FormErrorMessage>{errors.startTime && errors.startTime.message}</FormErrorMessage>
             </FormControl>
 
-            <FormControl>
+            <FormControl isInvalid={Boolean(errors.endTime)}>
               <FormLabel htmlFor="end">End</FormLabel>
               <Input
-                type="text"
+                ref={register()}
+                type="time"
                 id="end"
                 name="end"
                 width="100%"
                 variant="outline"
-                value={form.endTime}
-                onChange={handleInputChange}
               />
+
+              <FormErrorMessage>{errors.endTime && errors.endTime.message}</FormErrorMessage>
             </FormControl>
           </Stack>
 
@@ -156,6 +162,7 @@ const LessonTimeForm: React.FC<LessonTimeFormProps> = (props) => {
               outline: 'none',
               boxShadow: 'md',
             }}
+            isLoading={formState.isSubmitting}
           >
             Next
           </Button>
