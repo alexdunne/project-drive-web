@@ -37,7 +37,7 @@
     "relay": "yarn run relay-compiler",
     "lint": "yarn run eslint \"./src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "lint:fix": "yarn run eslint --fix \"./src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
-    "build:schema": "yarn run get-graphql-schema http://localhost:4000/api > schema.graphql"
+    "build:schema": "get-graphql-schema http://localhost:4000/api > schema.graphql"
   },
   "browserslist": {
     "production": [
@@ -69,7 +69,6 @@
     "eslint-config-prettier": "^6.14.0",
     "eslint-plugin-relay": "^1.8.1",
     "eslint-plugin-simple-import-sort": "^5.0.3",
-    "graphql": "^15.3.0",
     "graphql-cli": "^4.1.0",
     "husky": "^4.3.0",
     "lint-staged": "^10.4.2",
