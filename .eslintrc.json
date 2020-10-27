@@ -2,7 +2,7 @@
   "plugins": ["relay", "simple-import-sort"],
   "extends": ["react-app", "plugin:relay/recommended", "prettier"],
   "rules": {
-    "simple-import-sort/sort": "error",
+    "simple-import-sort/sort": "warn",
 
     // We're using TS not Flow
     "relay/generated-flow-types": "off",
@@ -12,7 +12,16 @@
     {
       // TypeScript only rules
       "files": ["**/*.ts?(x)"],
-      "rules": {}
+      "rules": {
+        "@typescript-eslint/no-unused-vars": [
+          1,
+          {
+            "args": "none",
+            "ignoreRestSiblings": true,
+            "varsIgnorePattern": "^_"
+          }
+        ]    
+      }
     }
   ]
 }

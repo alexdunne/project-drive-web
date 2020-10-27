@@ -137,6 +137,7 @@ type RootQueryType {
     """The id of an object."""
     id: ID!
   ): Node
+  students(after: String, before: String, first: Int, last: Int, searchTerm: String): StudentConnection
 }
 
 type Student implements Node {
@@ -145,6 +146,16 @@ type Student implements Node {
   """The ID of an object"""
   id: ID!
   name: String!
+}
+
+type StudentConnection {
+  edges: [StudentEdge]
+  pageInfo: PageInfo!
+}
+
+type StudentEdge {
+  cursor: String
+  node: Student
 }
 
 type StudentInvite implements Node {

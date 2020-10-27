@@ -19,7 +19,7 @@ const MobileSchedule = () => {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [searchInputValue, setSearchInputValue] = useState('');
 
-  const deferredSearchTerm = useDebounce(searchInputValue, 250);
+  const deferredSearchTerm = useDebounce(searchInputValue);
 
   const events = useLazyLoadQuery<MobileScheduleQuery>(
     graphql`
