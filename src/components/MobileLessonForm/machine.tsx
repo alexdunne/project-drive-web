@@ -206,7 +206,7 @@ const snapPointConfig = [
   },
   {
     id: STUDENT_SELECTION_SNAP_POINT,
-    snapPoint: 250,
+    snapPoint: 200,
   },
   {
     id: NOTES_SNAP_POINT,

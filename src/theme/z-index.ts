@@ -3,4 +3,7 @@ export const zIndex = {
   MobileHeader: 3,
 
   Overlay: 4,
+
+  // Defined in https://github.com/Temzasse/react-modal-sheet
+  BottomSheet: 9999999,
 };
