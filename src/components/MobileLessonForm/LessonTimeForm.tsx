@@ -100,7 +100,7 @@ export const LessonTimeForm: React.FC<LessonTimeFormProps> = (props) => {
               variant="outline"
             />
 
-            <FormErrorMessage>{errors.date && errors.date.message}</FormErrorMessage>
+            <FormErrorMessage>{errors.date?.message}</FormErrorMessage>
           </FormControl>
 
           <Grid gridTemplateColumns="repeat(2, 1fr)" gap="30px">
@@ -115,7 +115,7 @@ export const LessonTimeForm: React.FC<LessonTimeFormProps> = (props) => {
                 variant="outline"
               />
 
-              <FormErrorMessage>{errors.startTime && errors.startTime.message}</FormErrorMessage>
+              <FormErrorMessage>{errors.startTime?.message}</FormErrorMessage>
             </FormControl>
 
             <FormControl isInvalid={Boolean(errors.endTime)}>
@@ -129,7 +129,7 @@ export const LessonTimeForm: React.FC<LessonTimeFormProps> = (props) => {
                 variant="outline"
               />
 
-              <FormErrorMessage>{errors.endTime && errors.endTime.message}</FormErrorMessage>
+              <FormErrorMessage>{errors.endTime?.message}</FormErrorMessage>
             </FormControl>
           </Grid>
 

@@ -11,8 +11,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useService } from '@xstate/react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { graphql, useMutation } from 'react-relay/hooks';
 import * as yup from 'yup';
 
+import { InviteNewStudentForm_CreateStudentInviteMutation } from '../../__generated__/InviteNewStudentForm_CreateStudentInviteMutation.graphql';
+import { ApiError } from '../../error/ApiError';
 import { LessonFormService } from './machine';
 
 const schema = yup.object().shape({
@@ -32,7 +35,7 @@ interface InviteNewStudentFormProps {
 export const InviteNewStudentForm: React.FC<InviteNewStudentFormProps> = (props) => {
   const [current, send] = useService(props.service);
 
-  const { register, handleSubmit, errors, formState } = useForm<FormValues>({
+  const { register, handleSubmit, errors, formState, setError } = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues: {
       name: current.context.seedName ?? '',
@@ -40,15 +43,64 @@ export const InviteNewStudentForm: React.FC<InviteNewStudentFormProps> = (props)
     },
   });
 
+  const [createStudentInviteCommit, isInFlight] = useMutation<
+    InviteNewStudentForm_CreateStudentInviteMutation
+  >(graphql`
+    mutation InviteNewStudentForm_CreateStudentInviteMutation($input: CreateStudentInviteInput!) {
+      createStudentInvite(input: $input) {
+        student {
+          id
+          name
+          email
+        }
+      }
+    }
+  `);
+
   const onSubmit = (data: FormValues) => {
-    send({
-      type: 'NEXT',
-      student: {
-        id: '1',
-        name: data.name,
+    createStudentInviteCommit({
+      variables: {
+        input: {
+          email: data.email,
+          name: data.name,
+        },
+      },
+      onCompleted: (data, errors) => {
+        if (errors) {
+          const apiErrors = (errors as unknown) as ApiError[];
+
+          for (let error of apiErrors) {
+            if (error.code === 'validation') {
+              setError(error.extra.validation.field as any, {
+                type: 'manual',
+                message: error.extra.validation.error[0],
+              });
+            } else {
+              console.log('TODO: handle error:');
+              console.log(error);
+            }
+          }
+
+          return;
+        }
+
+        if (!data.createStudentInvite || !data.createStudentInvite.student) {
+          return;
+        }
+
+        send({
+          type: 'NEXT',
+          student: data.createStudentInvite.student,
+        });
+      },
+      onError: (e) => {
+        console.log('TODO');
+        console.log(e);
       },
     });
   };
+
+  const isSubmitting = formState.isSubmitting || isInFlight;
 
   return (
     <Stack spacing={2} px={4} pt={4}>
@@ -58,7 +110,7 @@ export const InviteNewStudentForm: React.FC<InviteNewStudentFormProps> = (props)
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={4}>
-          <FormControl>
+          <FormControl isInvalid={Boolean(errors.name)}>
             <FormLabel htmlFor="name">Name</FormLabel>
             <Input
               ref={register()}
@@ -68,12 +120,13 @@ export const InviteNewStudentForm: React.FC<InviteNewStudentFormProps> = (props)
               width="100%"
               variant="outline"
               autoFocus
+              autoCapitalize="words"
             />
 
-            <FormErrorMessage>{errors.name && errors.name.message}</FormErrorMessage>
+            <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
           </FormControl>
 
-          <FormControl>
+          <FormControl isInvalid={Boolean(errors.email)}>
             <FormLabel htmlFor="email">Email</FormLabel>
             <Input
               ref={register()}
@@ -84,7 +137,7 @@ export const InviteNewStudentForm: React.FC<InviteNewStudentFormProps> = (props)
               variant="outline"
             />
 
-            <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
+            <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
           </FormControl>
 
           <Button
@@ -96,7 +149,8 @@ export const InviteNewStudentForm: React.FC<InviteNewStudentFormProps> = (props)
               outline: 'none',
               boxShadow: 'md',
             }}
-            isLoading={formState.isSubmitting}
+            isLoading={isSubmitting}
+            isDisabled={isSubmitting}
           >
             Invite student
           </Button>

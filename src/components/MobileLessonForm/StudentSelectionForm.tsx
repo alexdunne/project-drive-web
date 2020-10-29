@@ -18,7 +18,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import React, { Fragment, unstable_useTransition, useEffect, useState } from 'react';
 import { FiLoader } from 'react-icons/fi';
 import { graphql } from 'react-relay';
-import { useLazyLoadQuery, usePaginationFragment } from 'react-relay/hooks';
+import { PreloadedQuery, usePaginationFragment, usePreloadedQuery } from 'react-relay/hooks';
 
 import { StudentSelectionForm_students$key } from '../../__generated__/StudentSelectionForm_students.graphql';
 import { StudentSelectionFormQuery } from '../../__generated__/StudentSelectionFormQuery.graphql';
@@ -39,20 +39,23 @@ interface Student {
 }
 
 interface StudentSelectionFormProps {
+  queryReference: PreloadedQuery<StudentSelectionFormQuery>;
   service: LessonFormService;
 }
+
+export const StudentSelectionFormPreloadQuery = graphql`
+  query StudentSelectionFormQuery($searchTerm: String) {
+    ...StudentSelectionForm_students @arguments(searchTerm: $searchTerm)
+  }
+`;
 
 export const StudentSelectionForm: React.FC<StudentSelectionFormProps> = (props) => {
   const [_, send] = useService(props.service);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
 
-  const query = useLazyLoadQuery<StudentSelectionFormQuery>(
-    graphql`
-      query StudentSelectionFormQuery($searchTerm: String) {
-        ...StudentSelectionForm_students @arguments(searchTerm: $searchTerm)
-      }
-    `,
-    {}
+  const query = usePreloadedQuery<StudentSelectionFormQuery>(
+    StudentSelectionFormPreloadQuery,
+    props.queryReference
   );
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -183,6 +186,7 @@ const StudentSelectionInput: React.FC<StudentSelectionInputProps> = (props) => {
   return (
     <Combobox
       aria-label="Students"
+      openOnFocus
       onSelect={(item) => {
         if (item === CREATE_NEW_STUDENT_ID) {
           props.onCreateNewStudent(term);
@@ -205,7 +209,9 @@ const StudentSelectionInput: React.FC<StudentSelectionInputProps> = (props) => {
 
         <ComboboxInput
           id={props.id}
+          autoFocus
           autoComplete="off"
+          autoCapitalize="words"
           px={8}
           onChange={(e: React.FormEvent<HTMLInputElement>) => setTerm(e.currentTarget.value)}
         />
@@ -227,7 +233,7 @@ const StudentSelectionInput: React.FC<StudentSelectionInputProps> = (props) => {
       </InputGroup>
 
       {students && (
-        <ComboboxPopover zIndex={zIndex.BottomSheet + 1}>
+        <ComboboxPopover portal={false} zIndex={zIndex.BottomSheet + 1}>
           {students.length > 0 ? (
             <ComboboxList>
               <Fragment>

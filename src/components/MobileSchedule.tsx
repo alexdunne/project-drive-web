@@ -77,14 +77,15 @@ const EventList: React.FC<EventListProps> = (props) => {
       @argumentDefinitions(
         count: { type: "Int", defaultValue: 10 }
         cursor: { type: "String" }
-        searchTerm: { type: "String" }
+        searchTerm: { type: "String", defaultValue: "" }
       )
       @refetchable(queryName: "EventListPaginationQuery") {
         events(first: $count, after: $cursor, searchTerm: $searchTerm)
-          @connection(key: "EventList_events", filters: ["searchTerm"]) {
+          @connection(key: "EventList_events", filters: []) {
           edges {
             node {
               id
+              startsAt
               ...MobileSchedule_EventSummary_events
             }
           }
@@ -148,7 +149,7 @@ const EventSummary: React.FC<EventSummaryProps> = (props) => {
       return 'Tomorrow';
     }
 
-    return format(startsAt, 'eeee');
+    return format(startsAt, 'eeee do');
   }, [startsAt]);
 
   return (

@@ -52,11 +52,11 @@ export const LessonNotesForm: React.FC<LessonNotesFormProps> = (props) => {
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={4}>
-          <FormControl>
+          <FormControl isInvalid={Boolean(errors.notes)}>
             <FormLabel htmlFor="notes">Notes</FormLabel>
             <Textarea ref={register()} id="notes" name="notes" width="100%" variant="outline" />
 
-            <FormErrorMessage>{errors.notes && errors.notes.message}</FormErrorMessage>
+            <FormErrorMessage>{errors.notes?.message}</FormErrorMessage>
           </FormControl>
 
           <Button

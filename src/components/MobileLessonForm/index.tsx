@@ -1,15 +1,22 @@
+import { inspect } from '@xstate/inspect';
 import { useMachine, useService } from '@xstate/react';
 import { AnimatePresence, motion } from 'framer-motion';
-import React, { useCallback, useEffect } from 'react';
+import React, { Suspense, useCallback, useEffect } from 'react';
 import Sheet, { SheetRef } from 'react-modal-sheet';
+import { useQueryLoader } from 'react-relay/hooks';
 
 import { useBottomSheetActions } from '../../hooks/useBottomSheetActions';
+import { Todo } from '../Todo';
 import { InviteNewStudentForm } from './InviteNewStudentForm';
 import { LessonConfirmation } from './LessonConfirmation';
 import { LessonNotesForm } from './LessonNotesForm';
 import { LessonTimeForm } from './LessonTimeForm';
 import { lessonFormMachine, LessonFormService, snapPoints } from './machine';
-import { StudentSelectionForm } from './StudentSelectionForm';
+import { StudentSelectionForm, StudentSelectionFormPreloadQuery } from './StudentSelectionForm';
+
+inspect({
+  iframe: false,
+});
 
 interface MobileLessonFormProps {
   isOpen: boolean;
@@ -20,11 +27,18 @@ export const MobileLessonForm: React.FC<MobileLessonFormProps> = ({ isOpen, onCl
   const sheetRef = React.useRef<SheetRef>();
   const { snapTo } = useBottomSheetActions(sheetRef);
 
-  const [current, send, service] = useMachine(lessonFormMachine);
+  const [current, send, service] = useMachine(lessonFormMachine, {
+    actions: {
+      onLessonCreated: onClose,
+    },
+    devTools: true,
+  });
 
   useEffect(() => {
-    snapTo(current.context.snapIndex);
-  }, [snapTo, current.context.snapIndex]);
+    if (isOpen) {
+      snapTo(current.context.snapIndex);
+    }
+  }, [isOpen, snapTo, current.context.snapIndex]);
 
   const handleClose = useCallback(() => {
     onClose();
@@ -37,13 +51,15 @@ export const MobileLessonForm: React.FC<MobileLessonFormProps> = ({ isOpen, onCl
       isOpen={isOpen}
       onClose={handleClose}
       snapPoints={snapPoints}
-      initialSnap={current.context.snapIndex}
+      initialSnap={0}
     >
       {/*  @ts-ignore */}
       <Sheet.Container>
         <Sheet.Content>
           <AnimatePresence initial={false} exitBeforeEnter>
-            <Form service={service} />
+            <Suspense fallback={<Todo>Form loading...</Todo>}>
+              <Form service={service} />
+            </Suspense>
           </AnimatePresence>
         </Sheet.Content>
       </Sheet.Container>
@@ -61,6 +77,20 @@ interface FormProps {
 const Form: React.FC<FormProps> = (props) => {
   const [current] = useService(props.service);
 
+  const [queryReference, loadQuery] = useQueryLoader(StudentSelectionFormPreloadQuery);
+
+  useEffect(() => {
+    // TODO
+    // Is this the best place for this coordination?
+    // It might make sense to move this into the state machine.
+    if (current.matches('studentSelection')) {
+      loadQuery({
+        first: 10,
+        searchTerm: '',
+      });
+    }
+  }, [current, loadQuery]);
+
   switch (true) {
     case current.matches('timeSelection'):
       return (
@@ -71,7 +101,9 @@ const Form: React.FC<FormProps> = (props) => {
     case current.matches('studentSelection'):
       return (
         <AnimatedWrapper key="student_selection_form">
-          <StudentSelectionForm service={props.service} />
+          {queryReference !== null ? (
+            <StudentSelectionForm service={props.service} queryReference={queryReference as any} />
+          ) : null}
         </AnimatedWrapper>
       );
     case current.matches('studentCreation'):

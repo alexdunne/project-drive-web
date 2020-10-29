@@ -30,7 +30,8 @@ type LessonFormEvent =
   | { type: 'RESET' }
   | LessonFormNextEvent
   | { type: 'PREVIOUS' }
-  | GoToCreateStudentEvent;
+  | GoToCreateStudentEvent
+  | { type: 'LESSON_SCHEDULED' };
 
 type LessonFormState =
   | {
@@ -127,18 +128,39 @@ export const lessonFormMachine = createMachine<LessonFormContext, LessonFormEven
       },
       confirmation: {
         entry: ['setSnapIndexToConfirmation'],
+        on: {
+          LESSON_SCHEDULED: 'lessonScheduled',
+        },
+      },
+      lessonScheduled: {
+        entry: ['onLessonCreated'],
+        after: {
+          300: {
+            target: 'resetting',
+          },
+        },
+      },
+      resetting: {
+        entry: ['resetData'],
+        always: 'timeSelection',
       },
     },
     on: {
       RESET: {
-        target: 'timeSelection',
+        target: 'resetting',
       },
     },
   },
   {
     actions: {
       resetData: assign((ctx) => {
-        return {};
+        return {
+          snapIndex: 0,
+          times: undefined,
+          student: undefined,
+          notes: undefined,
+          seedName: undefined,
+        };
       }),
 
       cacheTimes: assign<LessonFormContext, any>({
@@ -198,7 +220,7 @@ const snapPointConfig = [
   },
   {
     id: TIME_SELECTION_SNAP_POINT,
-    snapPoint: 325,
+    snapPoint: 300,
   },
   {
     id: STUDENT_CREATION_SNAP_POINT,
@@ -206,7 +228,7 @@ const snapPointConfig = [
   },
   {
     id: STUDENT_SELECTION_SNAP_POINT,
-    snapPoint: 200,
+    snapPoint: 300,
   },
   {
     id: NOTES_SNAP_POINT,
