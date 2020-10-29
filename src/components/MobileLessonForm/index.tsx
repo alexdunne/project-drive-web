@@ -1,4 +1,3 @@
-import { inspect } from '@xstate/inspect';
 import { useMachine, useService } from '@xstate/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { Suspense, useCallback, useEffect } from 'react';
@@ -14,10 +13,6 @@ import { LessonTimeForm } from './LessonTimeForm';
 import { lessonFormMachine, LessonFormService, snapPoints } from './machine';
 import { StudentSelectionForm, StudentSelectionFormPreloadQuery } from './StudentSelectionForm';
 
-inspect({
-  iframe: false,
-});
-
 interface MobileLessonFormProps {
   isOpen: boolean;
   onClose: () => void;
@@ -31,7 +26,6 @@ export const MobileLessonForm: React.FC<MobileLessonFormProps> = ({ isOpen, onCl
     actions: {
       onLessonCreated: onClose,
     },
-    devTools: true,
   });
 
   useEffect(() => {

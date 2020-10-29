@@ -3,11 +3,6 @@ schema {
   mutation: RootMutationType
 }
 
-type AuthPayload {
-  token: String!
-  user: User
-}
-
 input CreateLessonInput {
   endsAt: DateTime!
   notes: String
@@ -22,6 +17,11 @@ type CreateLessonPayload {
 input CreateStudentInviteInput {
   email: String!
   name: String!
+}
+
+type CreateStudentInvitePayload {
+  student: Student
+  studentInvite: StudentInvite
 }
 
 """
@@ -71,6 +71,11 @@ input LoginInput {
   password: String!
 }
 
+type LoginPayload {
+  token: String!
+  user: User
+}
+
 interface Node {
   """The id of the object."""
   id: ID!
@@ -90,16 +95,26 @@ type PageInfo {
   startCursor: String
 }
 
+input RegisterFromStudentInviteInput {
+  name: String!
+  password: String!
+  token: String!
+}
+
+type RegisterFromStudentInvitePayload {
+  token: String!
+  user: User
+}
+
 input RegisterInput {
   email: String!
   name: String!
   password: String!
 }
 
-input RegisterStudentInviteInput {
-  name: String!
-  password: String!
+type RegisterPayload {
   token: String!
+  user: User
 }
 
 input RescheduleLessonInput {
@@ -116,17 +131,17 @@ type RootMutationType {
   createLesson(input: CreateLessonInput!): CreateLessonPayload
 
   """Invite a person to become a Student of the current Instructor"""
-  createStudentInvite(input: CreateStudentInviteInput!): StudentInvitePayload
+  createStudentInvite(input: CreateStudentInviteInput!): CreateStudentInvitePayload
   deleteLesson(input: DeleteLessonInput!): DeleteLessonPayload
 
   """Login with existing account credentials"""
-  login(input: LoginInput!): AuthPayload
+  login(input: LoginInput!): LoginPayload
 
   """Register a new user account"""
-  register(input: RegisterInput!): AuthPayload
+  register(input: RegisterInput!): RegisterPayload
 
   """Register a new user account from a student invite"""
-  registerFromStudentInvite(input: RegisterStudentInviteInput!): AuthPayload
+  registerFromStudentInvite(input: RegisterFromStudentInviteInput!): RegisterFromStudentInvitePayload
   rescheduleLesson(input: RescheduleLessonInput!): RescheduleLessonPayload
   updateLesson(input: UpdateLessonInput!): UpdateLessonPayload
 }
@@ -164,11 +179,6 @@ type StudentInvite implements Node {
   """The ID of an object"""
   id: ID!
   name: String!
-}
-
-type StudentInvitePayload {
-  student: Student
-  studentInvite: StudentInvite
 }
 
 input UpdateLessonInput {

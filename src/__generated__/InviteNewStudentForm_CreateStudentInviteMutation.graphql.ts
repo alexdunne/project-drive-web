@@ -56,7 +56,7 @@ const node: ConcreteRequest = (function () {
             variableName: 'input',
           },
         ],
-        concreteType: 'StudentInvitePayload',
+        concreteType: 'CreateStudentInvitePayload',
         kind: 'LinkedField',
         name: 'createStudentInvite',
         plural: false,
