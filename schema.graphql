@@ -51,6 +51,16 @@ type Event implements Node {
   type: EventType!
 }
 
+input EventConflictsCheckInput {
+  endsAt: DateTime!
+  startsAt: DateTime!
+  type: EventType!
+}
+
+type EventConflictsCheckPayload {
+  hasConflicts: Boolean
+}
+
 type EventConnection {
   edges: [EventEdge]
   pageInfo: PageInfo!
@@ -147,6 +157,7 @@ type RootMutationType {
 }
 
 type RootQueryType {
+  eventConflictsCheck(input: EventConflictsCheckInput!): EventConflictsCheckPayload
   events(after: String, before: String, first: Int, last: Int, searchTerm: String): EventConnection
   node(
     """The id of an object."""

@@ -220,7 +220,7 @@ const snapPointConfig = [
   },
   {
     id: TIME_SELECTION_SNAP_POINT,
-    snapPoint: 300,
+    snapPoint: 325,
   },
   {
     id: STUDENT_CREATION_SNAP_POINT,

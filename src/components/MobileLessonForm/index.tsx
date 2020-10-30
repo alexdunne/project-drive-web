@@ -1,6 +1,6 @@
 import { useMachine, useService } from '@xstate/react';
 import { AnimatePresence, motion } from 'framer-motion';
-import React, { Suspense, useCallback, useEffect } from 'react';
+import React, { Suspense, useCallback, useEffect, useState } from 'react';
 import Sheet, { SheetRef } from 'react-modal-sheet';
 import { useQueryLoader } from 'react-relay/hooks';
 
@@ -27,6 +27,7 @@ export const MobileLessonForm: React.FC<MobileLessonFormProps> = ({ isOpen, onCl
       onLessonCreated: onClose,
     },
   });
+  const [initialSnapPoint] = useState(current.context.snapIndex);
 
   useEffect(() => {
     if (isOpen) {
@@ -45,7 +46,7 @@ export const MobileLessonForm: React.FC<MobileLessonFormProps> = ({ isOpen, onCl
       isOpen={isOpen}
       onClose={handleClose}
       snapPoints={snapPoints}
-      initialSnap={0}
+      initialSnap={initialSnapPoint}
     >
       {/*  @ts-ignore */}
       <Sheet.Container>
