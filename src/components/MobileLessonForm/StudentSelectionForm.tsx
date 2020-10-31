@@ -5,7 +5,6 @@ import {
   Button,
   FormControl,
   FormLabel,
-  Heading,
   Icon,
   InputGroup,
   InputLeftElement,
@@ -24,6 +23,7 @@ import { StudentSelectionForm_students$key } from '../../__generated__/StudentSe
 import { StudentSelectionFormQuery } from '../../__generated__/StudentSelectionFormQuery.graphql';
 import { useDebounce } from '../../hooks/useDebounce';
 import { zIndex } from '../../theme/z-index';
+import { BottomSheetHeader } from '../BottomSheetHeader';
 import {
   Combobox,
   ComboboxInput,
@@ -72,10 +72,10 @@ export const StudentSelectionForm: React.FC<StudentSelectionFormProps> = (props)
   };
 
   return (
-    <Stack spacing={2} px={4} pt={4}>
-      <Heading as="h3" fontSize="lg" textAlign="center">
+    <Stack spacing={2} px={4} pt={2}>
+      <BottomSheetHeader onBack={() => send({ type: 'PREVIOUS' })}>
         Select a student
-      </Heading>
+      </BottomSheetHeader>
 
       <form onSubmit={onSubmit}>
         <Stack spacing={4}>

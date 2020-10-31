@@ -92,12 +92,12 @@ export const lessonFormMachine = createMachine<LessonFormContext, LessonFormEven
       studentSelection: {
         entry: ['setSnapIndexToStudentSelection'],
         on: {
-          PREVIOUS: {
-            target: 'timeSelection',
-          },
           NEXT: {
             actions: ['cacheStudent'],
             target: 'notes',
+          },
+          PREVIOUS: {
+            target: 'timeSelection',
           },
           GO_TO_CREATE_STUDENT: {
             target: 'studentCreation',
@@ -124,12 +124,18 @@ export const lessonFormMachine = createMachine<LessonFormContext, LessonFormEven
             actions: ['cacheNotes'],
             target: 'confirmation',
           },
+          PREVIOUS: {
+            target: 'studentSelection',
+          },
         },
       },
       confirmation: {
         entry: ['setSnapIndexToConfirmation'],
         on: {
           LESSON_SCHEDULED: 'lessonScheduled',
+          PREVIOUS: {
+            target: 'notes',
+          },
         },
       },
       lessonScheduled: {

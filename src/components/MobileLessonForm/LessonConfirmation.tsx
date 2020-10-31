@@ -6,6 +6,7 @@ import { graphql, useMutation } from 'react-relay/hooks';
 import { ConnectionHandler } from 'relay-runtime';
 
 import { LessonConfirmation_CreateLessonMutation } from '../../__generated__/LessonConfirmation_CreateLessonMutation.graphql';
+import { BottomSheetHeader } from '../BottomSheetHeader';
 import { LessonFormService } from './machine';
 
 interface LessonConfirmationProps {
@@ -85,10 +86,8 @@ export const LessonConfirmation: React.FC<LessonConfirmationProps> = (props) => 
   const { times, student, notes } = current.context;
 
   return (
-    <Stack spacing={2} px={4} pt={4}>
-      <Heading as="h3" fontSize="lg" textAlign="center">
-        Confirmation
-      </Heading>
+    <Stack spacing={2} px={4} pt={2}>
+      <BottomSheetHeader onBack={() => send({ type: 'PREVIOUS' })}>Confirmation</BottomSheetHeader>
 
       <Box>
         <Stack spacing={4}>

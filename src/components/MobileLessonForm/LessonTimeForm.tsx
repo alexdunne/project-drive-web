@@ -5,7 +5,6 @@ import {
   FormErrorMessage,
   FormLabel,
   Grid,
-  Heading,
   Input,
   Stack,
 } from '@chakra-ui/core';
@@ -20,6 +19,7 @@ import React, { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
+import { BottomSheetHeader } from '../BottomSheetHeader';
 import { LessonFormService } from './machine';
 
 const schema = yup.object().shape({
@@ -81,10 +81,8 @@ export const LessonTimeForm: React.FC<LessonTimeFormProps> = (props) => {
   };
 
   return (
-    <Stack spacing={2} px={4} pt={4}>
-      <Heading as="h3" fontSize="lg" textAlign="center">
-        Schedule a lesson
-      </Heading>
+    <Stack spacing={2} px={4} pt={2}>
+      <BottomSheetHeader>Schedule a lesson</BottomSheetHeader>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={4}>
