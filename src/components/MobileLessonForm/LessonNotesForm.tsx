@@ -21,12 +21,12 @@ interface LessonNotesFormProps {
 }
 
 export const LessonNotesForm: React.FC<LessonNotesFormProps> = (props) => {
-  const [_current, send] = useService(props.service);
+  const [current, send] = useService(props.service);
 
   const { register, handleSubmit, errors, formState } = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues: {
-      notes: '',
+      notes: current.context.notes ?? '',
     },
   });
 

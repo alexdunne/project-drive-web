@@ -5,6 +5,7 @@ import {
   Button,
   FormControl,
   FormLabel,
+  Grid,
   Icon,
   InputGroup,
   InputLeftElement,
@@ -50,8 +51,10 @@ export const StudentSelectionFormPreloadQuery = graphql`
 `;
 
 export const StudentSelectionForm: React.FC<StudentSelectionFormProps> = (props) => {
-  const [_, send] = useService(props.service);
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [current, send] = useService(props.service);
+  const [selectedStudent, setSelectedStudent] = useState<Student | undefined>(
+    current.context.student
+  );
 
   const query = usePreloadedQuery<StudentSelectionFormQuery>(
     StudentSelectionFormPreloadQuery,
@@ -83,17 +86,17 @@ export const StudentSelectionForm: React.FC<StudentSelectionFormProps> = (props)
             <FormLabel htmlFor="student">Student</FormLabel>
 
             {selectedStudent ? (
-              <Box display="grid" gridTemplateColumns="auto auto" gridColumnGap="30px">
+              <Grid gridTemplateColumns="auto auto" gridColumnGap="30px">
                 <Text color="gray.800" py={2}>
                   {selectedStudent.name}
                 </Text>
 
                 <Box textAlign="right">
-                  <Button variant="link" p={2} onClick={() => setSelectedStudent(null)}>
+                  <Button variant="link" p={2} onClick={() => setSelectedStudent(undefined)}>
                     Change
                   </Button>
                 </Box>
-              </Box>
+              </Grid>
             ) : (
               <StudentSelectionInput
                 id="student"

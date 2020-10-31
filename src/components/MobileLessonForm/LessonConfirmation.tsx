@@ -1,4 +1,4 @@
-import { Box, Button, Heading, Stack, Text } from '@chakra-ui/core';
+import { Box, Button, Grid, Heading, Stack, Text } from '@chakra-ui/core';
 import { useService } from '@xstate/react';
 import format from 'date-fns/format';
 import React, { useCallback } from 'react';
@@ -96,7 +96,9 @@ export const LessonConfirmation: React.FC<LessonConfirmationProps> = (props) => 
               Date
             </Heading>
 
-            <Text>{format(times.startsAt, 'EEEE, do MMM')}</Text>
+            <Detail onChangeRequested={() => send({ type: 'GO_TO_TIME_SELECTION' })}>
+              <Text>{format(times.startsAt, 'EEEE, do MMM')}</Text>
+            </Detail>
           </Box>
 
           <Box>
@@ -104,9 +106,11 @@ export const LessonConfirmation: React.FC<LessonConfirmationProps> = (props) => 
               Times
             </Heading>
 
-            <Text>
-              {format(times.startsAt, 'HH:mm')} - {format(times.endsAt, 'HH:mm')}
-            </Text>
+            <Detail onChangeRequested={() => send({ type: 'GO_TO_TIME_SELECTION' })}>
+              <Text>
+                {format(times.startsAt, 'HH:mm')} - {format(times.endsAt, 'HH:mm')}
+              </Text>
+            </Detail>
           </Box>
 
           <Box>
@@ -114,7 +118,9 @@ export const LessonConfirmation: React.FC<LessonConfirmationProps> = (props) => 
               Student
             </Heading>
 
-            <Text>{student.name}</Text>
+            <Detail onChangeRequested={() => send({ type: 'GO_TO_STUDENT_SELECTION' })}>
+              <Text>{student.name}</Text>
+            </Detail>
           </Box>
 
           <Box>
@@ -122,7 +128,9 @@ export const LessonConfirmation: React.FC<LessonConfirmationProps> = (props) => 
               Notes
             </Heading>
 
-            <Text>{notes && notes.length > 50 ? `${notes?.substring(0, 47)}...` : notes}</Text>
+            <Detail onChangeRequested={() => send({ type: 'GO_TO_NOTES' })}>
+              <Text>{notes && notes.length > 50 ? `${notes?.substring(0, 47)}...` : notes}</Text>
+            </Detail>
           </Box>
 
           <Box pt={6}>
@@ -145,5 +153,23 @@ export const LessonConfirmation: React.FC<LessonConfirmationProps> = (props) => 
         </Stack>
       </Box>
     </Stack>
+  );
+};
+
+interface DetailProps {
+  onChangeRequested: () => void;
+}
+
+const Detail: React.FC<DetailProps> = (props) => {
+  return (
+    <Grid gridTemplateColumns="auto auto" gridColumnGap="30px" alignItems="center">
+      {props.children}
+
+      <Box textAlign="right">
+        <Button variant="link" color="teal.400" p={2} onClick={props.onChangeRequested}>
+          Change
+        </Button>
+      </Box>
+    </Grid>
   );
 };
