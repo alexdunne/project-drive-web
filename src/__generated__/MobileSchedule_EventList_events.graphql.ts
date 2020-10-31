@@ -10,7 +10,7 @@ export type MobileSchedule_EventList_events = {
       readonly node: {
         readonly id: string;
         readonly startsAt: string;
-        readonly ' $fragmentRefs': FragmentRefs<'MobileSchedule_EventSummary_events'>;
+        readonly ' $fragmentRefs': FragmentRefs<'MobileSchedule_EventSummary_event'>;
       } | null;
     } | null> | null;
   } | null;
@@ -115,7 +115,7 @@ const node: ReaderFragment = (function () {
                   {
                     args: null,
                     kind: 'FragmentSpread',
-                    name: 'MobileSchedule_EventSummary_events',
+                    name: 'MobileSchedule_EventSummary_event',
                   },
                 ],
                 storageKey: null,
@@ -163,5 +163,5 @@ const node: ReaderFragment = (function () {
     abstractKey: null,
   };
 })();
-(node as any).hash = 'd99a4db35a875cbac99c825d8f0fc784';
+(node as any).hash = 'ab6b818dfbbd5fbf822df1b7b6a96f2a';
 export default node;

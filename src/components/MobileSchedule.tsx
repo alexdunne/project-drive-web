@@ -1,16 +1,28 @@
-import { Box, IconButton, List, ListItem, Stack, Text, useDisclosure } from '@chakra-ui/core';
+import {
+  Box,
+  Button,
+  IconButton,
+  List,
+  ListItem,
+  Stack,
+  Text,
+  useDisclosure,
+} from '@chakra-ui/core';
 import format from 'date-fns/format';
 import isToday from 'date-fns/isToday';
 import isTomorrow from 'date-fns/isTomorrow';
 import React, { Fragment, Suspense, useEffect, useMemo, useState } from 'react';
 import { IconType } from 'react-icons';
 import { FiCalendar, FiFile, FiPlus } from 'react-icons/fi';
+import Sheet from 'react-modal-sheet';
 import { graphql, useFragment, useLazyLoadQuery, usePaginationFragment } from 'react-relay/hooks';
 
 import { MobileSchedule_EventList_events$key } from '../__generated__/MobileSchedule_EventList_events.graphql';
-import { MobileSchedule_EventSummary_events$key } from '../__generated__/MobileSchedule_EventSummary_events.graphql';
+import { MobileSchedule_EventNotesBottomSheet_event$key } from '../__generated__/MobileSchedule_EventNotesBottomSheet_event.graphql';
+import { MobileSchedule_EventSummary_event$key } from '../__generated__/MobileSchedule_EventSummary_event.graphql';
 import { MobileScheduleQuery } from '../__generated__/MobileScheduleQuery.graphql';
 import { useDebounce } from '../hooks/useDebounce';
+import { BottomSheetHeader } from './BottomSheetHeader';
 import { MobileHeader, MobileHeaderMenu, MobileHeaderTitle } from './MobileHeader';
 import { MobileLessonForm } from './MobileLessonForm';
 import { MobileSearchInput } from './MobileSeachInput';
@@ -86,7 +98,7 @@ const EventList: React.FC<EventListProps> = (props) => {
             node {
               id
               startsAt
-              ...MobileSchedule_EventSummary_events
+              ...MobileSchedule_EventSummary_event
             }
           }
         }
@@ -119,22 +131,25 @@ const EventList: React.FC<EventListProps> = (props) => {
 };
 
 interface EventSummaryProps {
-  event: MobileSchedule_EventSummary_events$key;
+  event: MobileSchedule_EventSummary_event$key;
 }
 
 const EventSummary: React.FC<EventSummaryProps> = (props) => {
   const event = useFragment(
     graphql`
-      fragment MobileSchedule_EventSummary_events on Event {
+      fragment MobileSchedule_EventSummary_event on Event {
         startsAt
         endsAt
         student {
           name
         }
+        ...MobileSchedule_EventNotesBottomSheet_event
       }
     `,
     props.event
   );
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const startsAt = useMemo(() => new Date(event.startsAt), [event]);
   const endsAt = useMemo(() => new Date(event.endsAt), [event]);
@@ -153,29 +168,37 @@ const EventSummary: React.FC<EventSummaryProps> = (props) => {
   }, [startsAt]);
 
   return (
-    <Box px={6} py={4} bg={`${color}.50`} borderRadius="md" shadow="sm">
-      <Box display="grid" gridTemplateColumns="repeat(2, 1fr)">
-        <Text color={`${color}.700`} fontWeight="semibold">
-          {event.student.name}
+    <Fragment>
+      <Box px={6} py={4} bg={`${color}.50`} borderRadius="md" shadow="sm">
+        <Box display="grid" gridTemplateColumns="repeat(2, 1fr)">
+          <Text color={`${color}.700`} fontWeight="semibold">
+            {event.student.name}
+          </Text>
+
+          <Box textAlign="right">
+            <Text color={`${color}.500`} fontSize="sm">
+              {formattedEventDate}
+            </Text>
+          </Box>
+        </Box>
+
+        <Text color={`${color}.700`} fontSize="sm">
+          {format(startsAt, 'H:mm')} - {format(endsAt, 'H:mm')}
         </Text>
 
-        <Box textAlign="right">
-          <Text color={`${color}.500`} fontSize="sm">
-            {formattedEventDate}
-          </Text>
-        </Box>
+        <Stack isInline spacing={4} pt={4}>
+          <EventSummaryAction color={color} icon={FiFile} label="Notes" onClick={onOpen} />
+          <EventSummaryAction
+            color={color}
+            icon={FiCalendar}
+            label="Reschedule"
+            onClick={() => {}}
+          />
+        </Stack>
       </Box>
 
-      <Text color={`${color}.700`} fontSize="sm">
-        {format(startsAt, 'H:mm')} - {format(endsAt, 'H:mm')}
-      </Text>
-
-      <Stack isInline spacing={4} pt={4}>
-        <EventSummaryAction color={color} icon={FiFile} label="Notes" onClick={() => {}} />
-
-        <EventSummaryAction color={color} icon={FiCalendar} label="Reschedule" onClick={() => {}} />
-      </Stack>
-    </Box>
+      <EventNotesBottomSheet event={event} isOpen={isOpen} onClose={onClose} />
+    </Fragment>
   );
 };
 
@@ -194,20 +217,69 @@ const EventSummaryAction: React.FC<EventSummaryActionProps> = ({
   ...rest
 }) => {
   return (
-    <Box
+    <Button
       color={`${color}.300`}
+      bg="transparent"
       border="1px"
       borderColor={`${color}.300`}
       borderRadius="lg"
       px={2}
       py={1}
+      onClick={onClick}
       {...rest}
     >
       <Box as={icon} display="inline-block" mr={1} />
       <Text as="span" fontSize="sm">
         {label}
       </Text>
-    </Box>
+    </Button>
+  );
+};
+
+interface EventNotesBottomSheetProps {
+  event: MobileSchedule_EventNotesBottomSheet_event$key;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const EventNotesBottomSheet: React.FC<EventNotesBottomSheetProps> = (props) => {
+  const event = useFragment(
+    graphql`
+      fragment MobileSchedule_EventNotesBottomSheet_event on Event {
+        notes
+      }
+    `,
+    props.event
+  );
+
+  return (
+    <Sheet isOpen={props.isOpen} onClose={props.onClose} snapPoints={[300]} initialSnap={0}>
+      {/*  @ts-ignore */}
+      <Sheet.Container>
+        {/*  @ts-ignore */}
+        <Sheet.Header />
+        <Sheet.Content>
+          <Stack spacing={2} px={4}>
+            <BottomSheetHeader>Notes</BottomSheetHeader>
+
+            <Box
+              height="200px"
+              overflowY="auto"
+              p={4}
+              borderRadius="md"
+              bg="gray.50"
+              border="1px"
+              borderColor="gray.200"
+            >
+              <Text>{event.notes}</Text>
+            </Box>
+          </Stack>
+        </Sheet.Content>
+      </Sheet.Container>
+
+      {/*  @ts-ignore */}
+      <Sheet.Backdrop onClick={props.onClose} />
+    </Sheet>
   );
 };
 

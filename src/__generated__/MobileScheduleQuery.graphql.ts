@@ -28,7 +28,7 @@ fragment MobileSchedule_EventList_events_1CW4ID on RootQueryType {
       node {
         id
         startsAt
-        ...MobileSchedule_EventSummary_events
+        ...MobileSchedule_EventSummary_event
         __typename
       }
       cursor
@@ -40,13 +40,18 @@ fragment MobileSchedule_EventList_events_1CW4ID on RootQueryType {
   }
 }
 
-fragment MobileSchedule_EventSummary_events on Event {
+fragment MobileSchedule_EventNotesBottomSheet_event on Event {
+  notes
+}
+
+fragment MobileSchedule_EventSummary_event on Event {
   startsAt
   endsAt
   student {
     name
     id
   }
+  ...MobileSchedule_EventNotesBottomSheet_event
 }
 */
 
@@ -162,6 +167,13 @@ const node: ConcreteRequest = (function () {
                       alias: null,
                       args: null,
                       kind: 'ScalarField',
+                      name: 'notes',
+                      storageKey: null,
+                    },
+                    {
+                      alias: null,
+                      args: null,
+                      kind: 'ScalarField',
                       name: '__typename',
                       storageKey: null,
                     },
@@ -218,13 +230,13 @@ const node: ConcreteRequest = (function () {
       ],
     },
     params: {
-      cacheID: 'd235ee4b926c92ee6610c8092d35c4ca',
+      cacheID: '6a123377ab6ceadb1ec4b237a1f5606e',
       id: null,
       metadata: {},
       name: 'MobileScheduleQuery',
       operationKind: 'query',
       text:
-        'query MobileScheduleQuery(\n  $searchTerm: String\n) {\n  ...MobileSchedule_EventList_events_1CW4ID\n}\n\nfragment MobileSchedule_EventList_events_1CW4ID on RootQueryType {\n  events(first: 10, searchTerm: $searchTerm) {\n    edges {\n      node {\n        id\n        startsAt\n        ...MobileSchedule_EventSummary_events\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MobileSchedule_EventSummary_events on Event {\n  startsAt\n  endsAt\n  student {\n    name\n    id\n  }\n}\n',
+        'query MobileScheduleQuery(\n  $searchTerm: String\n) {\n  ...MobileSchedule_EventList_events_1CW4ID\n}\n\nfragment MobileSchedule_EventList_events_1CW4ID on RootQueryType {\n  events(first: 10, searchTerm: $searchTerm) {\n    edges {\n      node {\n        id\n        startsAt\n        ...MobileSchedule_EventSummary_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MobileSchedule_EventNotesBottomSheet_event on Event {\n  notes\n}\n\nfragment MobileSchedule_EventSummary_event on Event {\n  startsAt\n  endsAt\n  student {\n    name\n    id\n  }\n  ...MobileSchedule_EventNotesBottomSheet_event\n}\n',
     },
   };
 })();
