@@ -92,7 +92,12 @@ export const StudentSelectionForm: React.FC<StudentSelectionFormProps> = (props)
                 </Text>
 
                 <Box textAlign="right">
-                  <Button variant="link" p={2} onClick={() => setSelectedStudent(undefined)}>
+                  <Button
+                    variant="link"
+                    p={2}
+                    color="teal.400"
+                    onClick={() => setSelectedStudent(undefined)}
+                  >
                     Change
                   </Button>
                 </Box>
