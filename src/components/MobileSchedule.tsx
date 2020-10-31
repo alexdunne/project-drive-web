@@ -12,9 +12,9 @@ import format from 'date-fns/format';
 import isToday from 'date-fns/isToday';
 import isTomorrow from 'date-fns/isTomorrow';
 import parse from 'date-fns/parse';
-import React, { Fragment, Suspense, useEffect, useMemo, useState } from 'react';
+import React, { Fragment, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { IconType } from 'react-icons';
-import { FiCalendar, FiFile, FiPlus } from 'react-icons/fi';
+import { FiAlertCircle, FiCalendar, FiFile, FiPlus } from 'react-icons/fi';
 import Sheet from 'react-modal-sheet';
 import {
   graphql,
@@ -23,7 +23,10 @@ import {
   useMutation,
   usePaginationFragment,
 } from 'react-relay/hooks';
+import { ConnectionHandler } from 'relay-runtime';
 
+import { MobileSchedule_CancelEventAction_CancelLessonMutation } from '../__generated__/MobileSchedule_CancelEventAction_CancelLessonMutation.graphql';
+import { MobileSchedule_CancelEventAction_event$key } from '../__generated__/MobileSchedule_CancelEventAction_event.graphql';
 import { MobileSchedule_EventList_events$key } from '../__generated__/MobileSchedule_EventList_events.graphql';
 import { MobileSchedule_EventNotesBottomSheet_event$key } from '../__generated__/MobileSchedule_EventNotesBottomSheet_event.graphql';
 import { MobileSchedule_EventRescheduleBottomSheet_event$key } from '../__generated__/MobileSchedule_EventRescheduleBottomSheet_event.graphql';
@@ -32,6 +35,7 @@ import { MobileSchedule_EventSummary_event$key } from '../__generated__/MobileSc
 import { MobileScheduleQuery } from '../__generated__/MobileScheduleQuery.graphql';
 import { useDebounce } from '../hooks/useDebounce';
 import { BottomSheetHeader } from './BottomSheetHeader';
+import { ConfirmationBottomSheet } from './ConfirmationBottomSheet';
 import { MobileHeader, MobileHeaderMenu, MobileHeaderTitle } from './MobileHeader';
 import { MobileLessonForm } from './MobileLessonForm';
 import { LessonTimeForm } from './MobileLessonForm/LessonTimeForm';
@@ -155,6 +159,7 @@ const EventSummary: React.FC<EventSummaryProps> = (props) => {
         }
         ...MobileSchedule_EventNotesBottomSheet_event
         ...MobileSchedule_EventRescheduleBottomSheet_event
+        ...MobileSchedule_CancelEventAction_event
       }
     `,
     props.event
@@ -210,6 +215,8 @@ const EventSummary: React.FC<EventSummaryProps> = (props) => {
             label="Reschedule"
             onClick={onOpenReschedule}
           />
+
+          <CancelEventAction event={event} color={color} />
         </Stack>
       </Box>
 
@@ -250,7 +257,7 @@ const EventSummaryAction: React.FC<EventSummaryActionProps> = ({
       {...rest}
     >
       <Box as={icon} display="inline-block" mr={1} />
-      <Text as="span" fontSize="sm">
+      <Text as="span" fontSize="xs">
         {label}
       </Text>
     </Button>
@@ -384,6 +391,79 @@ const EventRescheduleBottomSheet: React.FC<EventRescheduleBottomSheetProps> = (p
       {/*  @ts-ignore */}
       <Sheet.Backdrop onClick={props.onClose} />
     </Sheet>
+  );
+};
+
+interface CancelEventActionProps {
+  event: MobileSchedule_CancelEventAction_event$key;
+  color: string;
+}
+
+const CancelEventAction: React.FC<CancelEventActionProps> = (props) => {
+  const event = useFragment(
+    graphql`
+      fragment MobileSchedule_CancelEventAction_event on Event {
+        id
+      }
+    `,
+    props.event
+  );
+
+  const [cancelLessonCommit] = useMutation<
+    MobileSchedule_CancelEventAction_CancelLessonMutation
+  >(graphql`
+    mutation MobileSchedule_CancelEventAction_CancelLessonMutation($input: DeleteLessonInput!) {
+      deleteLesson(input: $input) {
+        id
+      }
+    }
+  `);
+
+  const onCancellationConfirmed = useCallback(
+    ({ onComplete }) => {
+      cancelLessonCommit({
+        variables: {
+          input: {
+            lessonId: event.id,
+          },
+        },
+        onCompleted: (response, errors) => {
+          if (errors) {
+            // TODO - Handle this
+            return;
+          }
+
+          onComplete();
+        },
+        updater: (store) => {
+          const root = store.getRoot();
+          const events = ConnectionHandler.getConnection(root, 'EventList_events');
+
+          if (!events) {
+            return;
+          }
+
+          ConnectionHandler.deleteNode(events, event.id);
+        },
+      });
+    },
+    [cancelLessonCommit, event]
+  );
+
+  return (
+    <ConfirmationBottomSheet
+      description={<Text textAlign="center">Are you sure you want to cancel this event?</Text>}
+      onConfirm={onCancellationConfirmed}
+    >
+      {({ onRequestConfirmation }) => (
+        <EventSummaryAction
+          color={props.color}
+          icon={FiAlertCircle}
+          label="Cancel"
+          onClick={onRequestConfirmation}
+        />
+      )}
+    </ConfirmationBottomSheet>
   );
 };
 

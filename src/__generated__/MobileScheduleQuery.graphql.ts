@@ -22,6 +22,10 @@ query MobileScheduleQuery(
   ...MobileSchedule_EventList_events_1CW4ID
 }
 
+fragment MobileSchedule_CancelEventAction_event on Event {
+  id
+}
+
 fragment MobileSchedule_EventList_events_1CW4ID on RootQueryType {
   events(first: 10, searchTerm: $searchTerm) {
     edges {
@@ -59,6 +63,7 @@ fragment MobileSchedule_EventSummary_event on Event {
   }
   ...MobileSchedule_EventNotesBottomSheet_event
   ...MobileSchedule_EventRescheduleBottomSheet_event
+  ...MobileSchedule_CancelEventAction_event
 }
 */
 
@@ -237,13 +242,13 @@ const node: ConcreteRequest = (function () {
       ],
     },
     params: {
-      cacheID: '3a3707d4aca896bb9b4dded0b33baee9',
+      cacheID: '93ec96c135d5f9c0ce1d7a7dcbd9b69c',
       id: null,
       metadata: {},
       name: 'MobileScheduleQuery',
       operationKind: 'query',
       text:
-        'query MobileScheduleQuery(\n  $searchTerm: String\n) {\n  ...MobileSchedule_EventList_events_1CW4ID\n}\n\nfragment MobileSchedule_EventList_events_1CW4ID on RootQueryType {\n  events(first: 10, searchTerm: $searchTerm) {\n    edges {\n      node {\n        id\n        startsAt\n        ...MobileSchedule_EventSummary_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MobileSchedule_EventNotesBottomSheet_event on Event {\n  notes\n}\n\nfragment MobileSchedule_EventRescheduleBottomSheet_event on Event {\n  id\n  startsAt\n  endsAt\n}\n\nfragment MobileSchedule_EventSummary_event on Event {\n  startsAt\n  endsAt\n  student {\n    name\n    id\n  }\n  ...MobileSchedule_EventNotesBottomSheet_event\n  ...MobileSchedule_EventRescheduleBottomSheet_event\n}\n',
+        'query MobileScheduleQuery(\n  $searchTerm: String\n) {\n  ...MobileSchedule_EventList_events_1CW4ID\n}\n\nfragment MobileSchedule_CancelEventAction_event on Event {\n  id\n}\n\nfragment MobileSchedule_EventList_events_1CW4ID on RootQueryType {\n  events(first: 10, searchTerm: $searchTerm) {\n    edges {\n      node {\n        id\n        startsAt\n        ...MobileSchedule_EventSummary_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MobileSchedule_EventNotesBottomSheet_event on Event {\n  notes\n}\n\nfragment MobileSchedule_EventRescheduleBottomSheet_event on Event {\n  id\n  startsAt\n  endsAt\n}\n\nfragment MobileSchedule_EventSummary_event on Event {\n  startsAt\n  endsAt\n  student {\n    name\n    id\n  }\n  ...MobileSchedule_EventNotesBottomSheet_event\n  ...MobileSchedule_EventRescheduleBottomSheet_event\n  ...MobileSchedule_CancelEventAction_event\n}\n',
     },
   };
 })();
