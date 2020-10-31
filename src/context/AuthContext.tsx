@@ -1,9 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { graphql, useMutation } from 'react-relay/hooks';
 
-import { AuthContext_LoginMutation } from '../__generated__/AuthContext_LoginMutation.graphql';
-import { AuthContext_RegisterMutation } from '../__generated__/AuthContext_RegisterMutation.graphql';
-import { RuntimeError } from '../error/BaseErrors';
 import { AuthUtils } from '../util/auth';
 
 interface User {
@@ -15,91 +11,38 @@ interface LoginValues {
   password: string;
 }
 
-interface RegisterValues {
-  name: string;
-  email: string;
-  password: string;
-}
-
 interface State {
   user: User | null;
   isAuthenticated: boolean;
-  register: (values: RegisterValues) => void;
   login: (values: LoginValues) => void;
   logout: () => void;
 }
+
+// As GraphQL is used everywhere but the authentication routes we'll leave this
+// as a basic inlined implementation for now
+const authClient = {
+  login: async (values: LoginValues) => {
+    const response = await window.fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(values),
+    });
+
+    return response.json();
+  },
+};
 
 const AuthContext = React.createContext<State | undefined>(undefined);
 
 export const AuthProvider: React.FC = (props) => {
   const [user, setUser] = useState<User | null>(null);
 
-  const [loginCommit] = useMutation<AuthContext_LoginMutation>(graphql`
-    mutation AuthContext_LoginMutation($input: LoginInput!) {
-      login(input: $input) {
-        token
-        user {
-          id
-        }
-      }
-    }
-  `);
+  const login = useCallback(async (values: LoginValues) => {
+    const result = await authClient.login(values);
 
-  const [registerCommit] = useMutation<AuthContext_RegisterMutation>(graphql`
-    mutation AuthContext_RegisterMutation($input: RegisterInput!) {
-      register(input: $input) {
-        token
-        user {
-          id
-        }
-      }
-    }
-  `);
-
-  const login = useCallback(
-    (values) => {
-      loginCommit({
-        variables: { input: values },
-        onCompleted(data) {
-          if (!data.login?.user) {
-            throw new RuntimeError(
-              'Something went wrong when attempting to log in',
-              'No user was returned from the query'
-            );
-          }
-
-          AuthUtils.setAuthToken(data.login.token);
-
-          setUser(data.login.user);
-        },
-        onError(e) {
-          alert(e);
-        },
-      });
-    },
-    [loginCommit, setUser]
-  );
-
-  const register = useCallback(
-    (values) => {
-      registerCommit({
-        variables: values,
-        onCompleted(data) {
-          if (!data.register?.user) {
-            throw new RuntimeError(
-              'Something went wrong when attempting to log in',
-              'No user was returned from the query'
-            );
-          }
-
-          AuthUtils.setAuthToken(data.register.token);
-
-          setUser(data.register.user);
-        },
-      });
-    },
-    [registerCommit, setUser]
-  );
+    AuthUtils.setAuthToken(result.token);
+    setUser(result.user);
+  }, []);
 
   const logout = useCallback(() => {
     AuthUtils.logout();
@@ -111,8 +54,8 @@ export const AuthProvider: React.FC = (props) => {
   }, [user]);
 
   const value = useMemo(() => {
-    return { user, isAuthenticated, register, login, logout };
-  }, [login, logout, register, user, isAuthenticated]);
+    return { user, isAuthenticated, login, logout };
+  }, [login, logout, user, isAuthenticated]);
 
   return <AuthContext.Provider value={value} {...props} />;
 };
