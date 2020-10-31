@@ -11,20 +11,30 @@ import {
 import format from 'date-fns/format';
 import isToday from 'date-fns/isToday';
 import isTomorrow from 'date-fns/isTomorrow';
+import parse from 'date-fns/parse';
 import React, { Fragment, Suspense, useEffect, useMemo, useState } from 'react';
 import { IconType } from 'react-icons';
 import { FiCalendar, FiFile, FiPlus } from 'react-icons/fi';
 import Sheet from 'react-modal-sheet';
-import { graphql, useFragment, useLazyLoadQuery, usePaginationFragment } from 'react-relay/hooks';
+import {
+  graphql,
+  useFragment,
+  useLazyLoadQuery,
+  useMutation,
+  usePaginationFragment,
+} from 'react-relay/hooks';
 
 import { MobileSchedule_EventList_events$key } from '../__generated__/MobileSchedule_EventList_events.graphql';
 import { MobileSchedule_EventNotesBottomSheet_event$key } from '../__generated__/MobileSchedule_EventNotesBottomSheet_event.graphql';
+import { MobileSchedule_EventRescheduleBottomSheet_event$key } from '../__generated__/MobileSchedule_EventRescheduleBottomSheet_event.graphql';
+import { MobileSchedule_EventRescheduleBottomSheet_RescheduleLessonMutation } from '../__generated__/MobileSchedule_EventRescheduleBottomSheet_RescheduleLessonMutation.graphql';
 import { MobileSchedule_EventSummary_event$key } from '../__generated__/MobileSchedule_EventSummary_event.graphql';
 import { MobileScheduleQuery } from '../__generated__/MobileScheduleQuery.graphql';
 import { useDebounce } from '../hooks/useDebounce';
 import { BottomSheetHeader } from './BottomSheetHeader';
 import { MobileHeader, MobileHeaderMenu, MobileHeaderTitle } from './MobileHeader';
 import { MobileLessonForm } from './MobileLessonForm';
+import { LessonTimeForm } from './MobileLessonForm/LessonTimeForm';
 import { MobileSearchInput } from './MobileSeachInput';
 
 const MobileSchedule = () => {
@@ -144,12 +154,18 @@ const EventSummary: React.FC<EventSummaryProps> = (props) => {
           name
         }
         ...MobileSchedule_EventNotesBottomSheet_event
+        ...MobileSchedule_EventRescheduleBottomSheet_event
       }
     `,
     props.event
   );
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isNotesOpen, onOpen: onOpenNotes, onClose: onCloseNotes } = useDisclosure();
+  const {
+    isOpen: isRescheduleOpen,
+    onOpen: onOpenReschedule,
+    onClose: onCloseReschedule,
+  } = useDisclosure();
 
   const startsAt = useMemo(() => new Date(event.startsAt), [event]);
   const endsAt = useMemo(() => new Date(event.endsAt), [event]);
@@ -187,17 +203,22 @@ const EventSummary: React.FC<EventSummaryProps> = (props) => {
         </Text>
 
         <Stack isInline spacing={4} pt={4}>
-          <EventSummaryAction color={color} icon={FiFile} label="Notes" onClick={onOpen} />
+          <EventSummaryAction color={color} icon={FiFile} label="Notes" onClick={onOpenNotes} />
           <EventSummaryAction
             color={color}
             icon={FiCalendar}
             label="Reschedule"
-            onClick={() => {}}
+            onClick={onOpenReschedule}
           />
         </Stack>
       </Box>
 
-      <EventNotesBottomSheet event={event} isOpen={isOpen} onClose={onClose} />
+      <EventNotesBottomSheet event={event} isOpen={isNotesOpen} onClose={onCloseNotes} />
+      <EventRescheduleBottomSheet
+        event={event}
+        isOpen={isRescheduleOpen}
+        onClose={onCloseReschedule}
+      />
     </Fragment>
   );
 };
@@ -274,6 +295,89 @@ const EventNotesBottomSheet: React.FC<EventNotesBottomSheetProps> = (props) => {
               <Text>{event.notes}</Text>
             </Box>
           </Stack>
+        </Sheet.Content>
+      </Sheet.Container>
+
+      {/*  @ts-ignore */}
+      <Sheet.Backdrop onClick={props.onClose} />
+    </Sheet>
+  );
+};
+
+interface EventRescheduleBottomSheetProps {
+  event: MobileSchedule_EventRescheduleBottomSheet_event$key;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const EventRescheduleBottomSheet: React.FC<EventRescheduleBottomSheetProps> = (props) => {
+  const event = useFragment(
+    graphql`
+      fragment MobileSchedule_EventRescheduleBottomSheet_event on Event {
+        id
+        startsAt
+        endsAt
+      }
+    `,
+    props.event
+  );
+
+  const [rescheduleCommit] = useMutation<
+    MobileSchedule_EventRescheduleBottomSheet_RescheduleLessonMutation
+  >(graphql`
+    mutation MobileSchedule_EventRescheduleBottomSheet_RescheduleLessonMutation(
+      $input: RescheduleLessonInput!
+    ) {
+      rescheduleLesson(input: $input) {
+        lesson {
+          id
+          startsAt
+          endsAt
+        }
+      }
+    }
+  `);
+
+  const defaultValues = useMemo(() => {
+    return {
+      startsAt: new Date(event.startsAt),
+      endsAt: new Date(event.endsAt),
+    };
+  }, [event]);
+
+  return (
+    <Sheet isOpen={props.isOpen} onClose={props.onClose} snapPoints={[350]} initialSnap={0}>
+      {/*  @ts-ignore */}
+      <Sheet.Container>
+        {/*  @ts-ignore */}
+        <Sheet.Header />
+        <Sheet.Content>
+          <LessonTimeForm
+            defaultValues={defaultValues}
+            onSubmit={(data) => {
+              const startsAt = parse(data.startTime, 'HH:mm', data.date);
+              const endsAt = parse(data.endTime, 'HH:mm', data.date);
+
+              rescheduleCommit({
+                variables: {
+                  input: {
+                    lessonId: event.id,
+                    startsAt: format(startsAt, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"),
+                    endsAt: format(endsAt, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"),
+                  },
+                },
+                onCompleted: (response, errors) => {
+                  if (errors) {
+                    // TODO - Handle this
+                    return;
+                  }
+
+                  // TODO - Do we need so kind of notification here? Toast message etc?
+                  props.onClose();
+                },
+              });
+            }}
+          />
         </Sheet.Content>
       </Sheet.Container>
 

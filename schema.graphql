@@ -33,7 +33,7 @@ be converted to UTC if there is an offset.
 scalar DateTime
 
 input DeleteLessonInput {
-  id: ID!
+  lessonId: ID!
 }
 
 type DeleteLessonPayload {
@@ -49,6 +49,16 @@ type Event implements Node {
   startsAt: DateTime!
   student: Student!
   type: EventType!
+}
+
+input EventConflictsCheckInput {
+  endsAt: DateTime!
+  startsAt: DateTime!
+  type: EventType!
+}
+
+type EventConflictsCheckPayload {
+  hasConflicts: Boolean
 }
 
 type EventConnection {
@@ -119,7 +129,7 @@ type RegisterPayload {
 
 input RescheduleLessonInput {
   endsAt: DateTime!
-  id: ID!
+  lessonId: ID!
   startsAt: DateTime!
 }
 
@@ -147,6 +157,7 @@ type RootMutationType {
 }
 
 type RootQueryType {
+  eventConflictsCheck(input: EventConflictsCheckInput!): EventConflictsCheckPayload
   events(after: String, before: String, first: Int, last: Int, searchTerm: String): EventConnection
   node(
     """The id of an object."""
@@ -183,7 +194,7 @@ type StudentInvite implements Node {
 
 input UpdateLessonInput {
   endsAt: DateTime
-  id: ID!
+  lessonId: ID!
   notes: String
   startsAt: DateTime
 }

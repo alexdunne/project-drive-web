@@ -9,7 +9,6 @@ import {
   Stack,
 } from '@chakra-ui/core';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useService } from '@xstate/react';
 import addHours from 'date-fns/addHours';
 import format from 'date-fns/format';
 import isAfter from 'date-fns/isAfter';
@@ -20,7 +19,6 @@ import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
 import { BottomSheetHeader } from '../BottomSheetHeader';
-import { LessonFormService } from './machine';
 
 const schema = yup.object().shape({
   date: yup.date().required(),
@@ -45,46 +43,38 @@ interface FormValues {
 }
 
 interface LessonTimeFormProps {
-  service: LessonFormService;
+  defaultValues?: {
+    startsAt: Date;
+    endsAt: Date;
+  };
+  onSubmit: (data: FormValues) => void;
 }
 
 export const LessonTimeForm: React.FC<LessonTimeFormProps> = (props) => {
-  const [current, send] = useService(props.service);
-
   const defaultFormValues = useMemo(() => {
-    const { times } = current.context;
-
-    const startsAt = times?.startsAt ?? roundToNearestMinutes(new Date(), { nearestTo: 15 });
+    const startsAt =
+      props.defaultValues?.startsAt ?? roundToNearestMinutes(new Date(), { nearestTo: 15 });
     const endsAt =
-      times?.endsAt ?? roundToNearestMinutes(addHours(new Date(), 1), { nearestTo: 15 });
+      props.defaultValues?.endsAt ??
+      roundToNearestMinutes(addHours(new Date(), 1), { nearestTo: 15 });
 
     return {
       date: format(startsAt, 'yyyy-MM-dd'),
       startTime: format(startsAt, 'HH:mm'),
       endTime: format(endsAt, 'HH:mm'),
     };
-  }, [current.context]);
+  }, [props.defaultValues]);
 
   const { register, handleSubmit, errors, formState } = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues: defaultFormValues,
   });
 
-  const onSubmit = (data: FormValues) => {
-    send({
-      type: 'NEXT',
-      times: {
-        startsAt: parse(data.startTime, 'HH:mm', data.date),
-        endsAt: parse(data.endTime, 'HH:mm', data.date),
-      },
-    });
-  };
-
   return (
     <Stack spacing={2} px={4} pt={2}>
       <BottomSheetHeader>Schedule a lesson</BottomSheetHeader>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(props.onSubmit)}>
         <Stack spacing={4}>
           <FormControl isInvalid={Boolean(errors.date)}>
             <FormLabel htmlFor="date">Date</FormLabel>

@@ -10,7 +10,9 @@ export type MobileSchedule_EventSummary_event = {
   readonly student: {
     readonly name: string;
   };
-  readonly ' $fragmentRefs': FragmentRefs<'MobileSchedule_EventNotesBottomSheet_event'>;
+  readonly ' $fragmentRefs': FragmentRefs<
+    'MobileSchedule_EventNotesBottomSheet_event' | 'MobileSchedule_EventRescheduleBottomSheet_event'
+  >;
   readonly ' $refType': 'MobileSchedule_EventSummary_event';
 };
 export type MobileSchedule_EventSummary_event$data = MobileSchedule_EventSummary_event;
@@ -62,9 +64,14 @@ const node: ReaderFragment = {
       kind: 'FragmentSpread',
       name: 'MobileSchedule_EventNotesBottomSheet_event',
     },
+    {
+      args: null,
+      kind: 'FragmentSpread',
+      name: 'MobileSchedule_EventRescheduleBottomSheet_event',
+    },
   ],
   type: 'Event',
   abstractKey: null,
 };
-(node as any).hash = 'a8cb2cc2eb6ad5971f854998ae16c261';
+(node as any).hash = '3f16391447476d2ca79bcd9a65c17a4a';
 export default node;

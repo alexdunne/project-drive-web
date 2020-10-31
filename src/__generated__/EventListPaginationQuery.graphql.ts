@@ -48,6 +48,12 @@ fragment MobileSchedule_EventNotesBottomSheet_event on Event {
   notes
 }
 
+fragment MobileSchedule_EventRescheduleBottomSheet_event on Event {
+  id
+  startsAt
+  endsAt
+}
+
 fragment MobileSchedule_EventSummary_event on Event {
   startsAt
   endsAt
@@ -56,6 +62,7 @@ fragment MobileSchedule_EventSummary_event on Event {
     id
   }
   ...MobileSchedule_EventNotesBottomSheet_event
+  ...MobileSchedule_EventRescheduleBottomSheet_event
 }
 */
 
@@ -261,13 +268,13 @@ const node: ConcreteRequest = (function () {
       ],
     },
     params: {
-      cacheID: 'ff1f6b34d57f7de30c5d6e4f9cdbd04b',
+      cacheID: '0ccdd6824925633c67e31fc42787a2e7',
       id: null,
       metadata: {},
       name: 'EventListPaginationQuery',
       operationKind: 'query',
       text:
-        'query EventListPaginationQuery(\n  $count: Int = 10\n  $cursor: String\n  $searchTerm: String = ""\n) {\n  ...MobileSchedule_EventList_events_1YZSDV\n}\n\nfragment MobileSchedule_EventList_events_1YZSDV on RootQueryType {\n  events(first: $count, after: $cursor, searchTerm: $searchTerm) {\n    edges {\n      node {\n        id\n        startsAt\n        ...MobileSchedule_EventSummary_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MobileSchedule_EventNotesBottomSheet_event on Event {\n  notes\n}\n\nfragment MobileSchedule_EventSummary_event on Event {\n  startsAt\n  endsAt\n  student {\n    name\n    id\n  }\n  ...MobileSchedule_EventNotesBottomSheet_event\n}\n',
+        'query EventListPaginationQuery(\n  $count: Int = 10\n  $cursor: String\n  $searchTerm: String = ""\n) {\n  ...MobileSchedule_EventList_events_1YZSDV\n}\n\nfragment MobileSchedule_EventList_events_1YZSDV on RootQueryType {\n  events(first: $count, after: $cursor, searchTerm: $searchTerm) {\n    edges {\n      node {\n        id\n        startsAt\n        ...MobileSchedule_EventSummary_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MobileSchedule_EventNotesBottomSheet_event on Event {\n  notes\n}\n\nfragment MobileSchedule_EventRescheduleBottomSheet_event on Event {\n  id\n  startsAt\n  endsAt\n}\n\nfragment MobileSchedule_EventSummary_event on Event {\n  startsAt\n  endsAt\n  student {\n    name\n    id\n  }\n  ...MobileSchedule_EventNotesBottomSheet_event\n  ...MobileSchedule_EventRescheduleBottomSheet_event\n}\n',
     },
   };
 })();
