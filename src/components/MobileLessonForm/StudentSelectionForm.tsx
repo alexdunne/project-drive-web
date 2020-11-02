@@ -5,7 +5,7 @@ import {
   Button,
   FormControl,
   FormLabel,
-  Heading,
+  Grid,
   Icon,
   InputGroup,
   InputLeftElement,
@@ -24,6 +24,7 @@ import { StudentSelectionForm_students$key } from '../../__generated__/StudentSe
 import { StudentSelectionFormQuery } from '../../__generated__/StudentSelectionFormQuery.graphql';
 import { useDebounce } from '../../hooks/useDebounce';
 import { zIndex } from '../../theme/z-index';
+import { BottomSheetHeader } from '../BottomSheetHeader';
 import {
   Combobox,
   ComboboxInput,
@@ -50,8 +51,10 @@ export const StudentSelectionFormPreloadQuery = graphql`
 `;
 
 export const StudentSelectionForm: React.FC<StudentSelectionFormProps> = (props) => {
-  const [_, send] = useService(props.service);
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [current, send] = useService(props.service);
+  const [selectedStudent, setSelectedStudent] = useState<Student | undefined>(
+    current.context.student
+  );
 
   const query = usePreloadedQuery<StudentSelectionFormQuery>(
     StudentSelectionFormPreloadQuery,
@@ -72,10 +75,10 @@ export const StudentSelectionForm: React.FC<StudentSelectionFormProps> = (props)
   };
 
   return (
-    <Stack spacing={2} px={4} pt={4}>
-      <Heading as="h3" fontSize="lg" textAlign="center">
+    <Stack spacing={2} px={4} pt={2}>
+      <BottomSheetHeader onBack={() => send({ type: 'PREVIOUS' })}>
         Select a student
-      </Heading>
+      </BottomSheetHeader>
 
       <form onSubmit={onSubmit}>
         <Stack spacing={4}>
@@ -83,17 +86,22 @@ export const StudentSelectionForm: React.FC<StudentSelectionFormProps> = (props)
             <FormLabel htmlFor="student">Student</FormLabel>
 
             {selectedStudent ? (
-              <Box display="grid" gridTemplateColumns="auto auto" gridColumnGap="30px">
+              <Grid gridTemplateColumns="auto auto" gridColumnGap="30px">
                 <Text color="gray.800" py={2}>
                   {selectedStudent.name}
                 </Text>
 
                 <Box textAlign="right">
-                  <Button variant="link" p={2} onClick={() => setSelectedStudent(null)}>
+                  <Button
+                    variant="link"
+                    p={2}
+                    color="teal.400"
+                    onClick={() => setSelectedStudent(undefined)}
+                  >
                     Change
                   </Button>
                 </Box>
-              </Box>
+              </Grid>
             ) : (
               <StudentSelectionInput
                 id="student"

@@ -33,7 +33,7 @@ be converted to UTC if there is an offset.
 scalar DateTime
 
 input DeleteLessonInput {
-  id: ID!
+  lessonId: ID!
 }
 
 type DeleteLessonPayload {
@@ -76,16 +76,6 @@ enum EventType {
   LESSON
 }
 
-input LoginInput {
-  email: String!
-  password: String!
-}
-
-type LoginPayload {
-  token: String!
-  user: User
-}
-
 interface Node {
   """The id of the object."""
   id: ID!
@@ -105,31 +95,9 @@ type PageInfo {
   startCursor: String
 }
 
-input RegisterFromStudentInviteInput {
-  name: String!
-  password: String!
-  token: String!
-}
-
-type RegisterFromStudentInvitePayload {
-  token: String!
-  user: User
-}
-
-input RegisterInput {
-  email: String!
-  name: String!
-  password: String!
-}
-
-type RegisterPayload {
-  token: String!
-  user: User
-}
-
 input RescheduleLessonInput {
   endsAt: DateTime!
-  id: ID!
+  lessonId: ID!
   startsAt: DateTime!
 }
 
@@ -143,15 +111,6 @@ type RootMutationType {
   """Invite a person to become a Student of the current Instructor"""
   createStudentInvite(input: CreateStudentInviteInput!): CreateStudentInvitePayload
   deleteLesson(input: DeleteLessonInput!): DeleteLessonPayload
-
-  """Login with existing account credentials"""
-  login(input: LoginInput!): LoginPayload
-
-  """Register a new user account"""
-  register(input: RegisterInput!): RegisterPayload
-
-  """Register a new user account from a student invite"""
-  registerFromStudentInvite(input: RegisterFromStudentInviteInput!): RegisterFromStudentInvitePayload
   rescheduleLesson(input: RescheduleLessonInput!): RescheduleLessonPayload
   updateLesson(input: UpdateLessonInput!): UpdateLessonPayload
 }
@@ -194,16 +153,12 @@ type StudentInvite implements Node {
 
 input UpdateLessonInput {
   endsAt: DateTime
-  id: ID!
+  lessonId: ID!
   notes: String
   startsAt: DateTime
 }
 
 type UpdateLessonPayload {
   lesson: Event
-}
-
-type User {
-  id: ID!
 }
 

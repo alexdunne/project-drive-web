@@ -31,7 +31,10 @@ type LessonFormEvent =
   | LessonFormNextEvent
   | { type: 'PREVIOUS' }
   | GoToCreateStudentEvent
-  | { type: 'LESSON_SCHEDULED' };
+  | { type: 'LESSON_SCHEDULED' }
+  | { type: 'GO_TO_TIME_SELECTION' }
+  | { type: 'GO_TO_STUDENT_SELECTION' }
+  | { type: 'GO_TO_NOTES' };
 
 type LessonFormState =
   | {
@@ -92,12 +95,12 @@ export const lessonFormMachine = createMachine<LessonFormContext, LessonFormEven
       studentSelection: {
         entry: ['setSnapIndexToStudentSelection'],
         on: {
-          PREVIOUS: {
-            target: 'timeSelection',
-          },
           NEXT: {
             actions: ['cacheStudent'],
             target: 'notes',
+          },
+          PREVIOUS: {
+            target: 'timeSelection',
           },
           GO_TO_CREATE_STUDENT: {
             target: 'studentCreation',
@@ -124,12 +127,27 @@ export const lessonFormMachine = createMachine<LessonFormContext, LessonFormEven
             actions: ['cacheNotes'],
             target: 'confirmation',
           },
+          PREVIOUS: {
+            target: 'studentSelection',
+          },
         },
       },
       confirmation: {
         entry: ['setSnapIndexToConfirmation'],
         on: {
           LESSON_SCHEDULED: 'lessonScheduled',
+          PREVIOUS: {
+            target: 'notes',
+          },
+          GO_TO_TIME_SELECTION: {
+            target: 'timeSelection',
+          },
+          GO_TO_STUDENT_SELECTION: {
+            target: 'studentSelection',
+          },
+          GO_TO_NOTES: {
+            target: 'notes',
+          },
         },
       },
       lessonScheduled: {
@@ -216,7 +234,7 @@ type SnapPointKey =
 const snapPointConfig = [
   {
     id: CONFIRMATION_SNAP_POINT,
-    snapPoint: 375,
+    snapPoint: 425,
   },
   {
     id: TIME_SELECTION_SNAP_POINT,

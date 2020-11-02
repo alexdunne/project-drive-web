@@ -1,9 +1,7 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { graphql, useMutation } from 'react-relay/hooks';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { AuthContext_LoginMutation } from '../__generated__/AuthContext_LoginMutation.graphql';
-import { AuthContext_RegisterMutation } from '../__generated__/AuthContext_RegisterMutation.graphql';
-import { RuntimeError } from '../error/BaseErrors';
+import { FullPageSpinner } from '../components/FullPageSpinner';
+import { useAsync } from '../hooks/useAsync';
 import { AuthUtils } from '../util/auth';
 
 interface User {
@@ -15,91 +13,82 @@ interface LoginValues {
   password: string;
 }
 
-interface RegisterValues {
-  name: string;
-  email: string;
-  password: string;
-}
-
 interface State {
   user: User | null;
   isAuthenticated: boolean;
-  register: (values: RegisterValues) => void;
   login: (values: LoginValues) => void;
   logout: () => void;
 }
 
+// As GraphQL is used everywhere but the authentication routes we'll leave this
+// as a basic inlined implementation for now
+const authClient = {
+  login: async (values: LoginValues) => {
+    const response = await window.fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(values),
+    });
+
+    return response.json();
+  },
+  refresh: async (token: string) => {
+    const response = await window.fetch(`${process.env.REACT_APP_API_URL}/auth/refresh`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token: token }),
+    });
+
+    return response.json();
+  },
+};
+
 const AuthContext = React.createContext<State | undefined>(undefined);
+
+const refreshAuth = async () => {
+  const refreshToken = AuthUtils.getRefreshToken();
+
+  if (!refreshToken) {
+    throw new Error('No refresh token available');
+  }
+
+  const result = await authClient.refresh(refreshToken);
+
+  if (result.errors) {
+    throw new Error('Failed to acquire a new token');
+  }
+
+  return result;
+};
 
 export const AuthProvider: React.FC = (props) => {
   const [user, setUser] = useState<User | null>(null);
 
-  const [loginCommit] = useMutation<AuthContext_LoginMutation>(graphql`
-    mutation AuthContext_LoginMutation($input: LoginInput!) {
-      login(input: $input) {
-        token
-        user {
-          id
-        }
-      }
+  const onRefreshAuth = useCallback(async () => {
+    try {
+      const result = await refreshAuth();
+
+      AuthUtils.setAuthToken(result.token);
+      setUser(result.user);
+    } catch (e) {
+      AuthUtils.logout();
+      setUser(null);
     }
-  `);
+  }, []);
 
-  const [registerCommit] = useMutation<AuthContext_RegisterMutation>(graphql`
-    mutation AuthContext_RegisterMutation($input: RegisterInput!) {
-      register(input: $input) {
-        token
-        user {
-          id
-        }
-      }
-    }
-  `);
+  const { execute, status } = useAsync(onRefreshAuth);
 
-  const login = useCallback(
-    (values) => {
-      loginCommit({
-        variables: { input: values },
-        onCompleted(data) {
-          if (!data.login?.user) {
-            throw new RuntimeError(
-              'Something went wrong when attempting to log in',
-              'No user was returned from the query'
-            );
-          }
+  useEffect(() => {
+    execute();
+  }, [execute]);
 
-          AuthUtils.setAuthToken(data.login.token);
+  const login = useCallback(async (values: LoginValues) => {
+    const result = await authClient.login(values);
 
-          setUser(data.login.user);
-        },
-        onError(e) {
-          alert(e);
-        },
-      });
-    },
-    [loginCommit, setUser]
-  );
-
-  const register = useCallback(
-    (values) => {
-      registerCommit({
-        variables: values,
-        onCompleted(data) {
-          if (!data.register?.user) {
-            throw new RuntimeError(
-              'Something went wrong when attempting to log in',
-              'No user was returned from the query'
-            );
-          }
-
-          AuthUtils.setAuthToken(data.register.token);
-
-          setUser(data.register.user);
-        },
-      });
-    },
-    [registerCommit, setUser]
-  );
+    AuthUtils.setAuthToken(result.token);
+    AuthUtils.setRefreshToken(result.refresh_token);
+    setUser(result.user);
+  }, []);
 
   const logout = useCallback(() => {
     AuthUtils.logout();
@@ -107,14 +96,27 @@ export const AuthProvider: React.FC = (props) => {
   }, [setUser]);
 
   const isAuthenticated = useMemo(() => {
-    return user !== null;
+    return user != null;
   }, [user]);
 
-  const value = useMemo(() => {
-    return { user, isAuthenticated, register, login, logout };
-  }, [login, logout, register, user, isAuthenticated]);
+  const contextValue = useMemo(() => {
+    return { user, isAuthenticated, login, logout };
+  }, [login, logout, user, isAuthenticated]);
 
-  return <AuthContext.Provider value={value} {...props} />;
+  if (status === 'idle' || status === 'pending') {
+    return <FullPageSpinner />;
+  }
+
+  if (status === 'error') {
+    // This should be handled in the function that tries to refetch the user
+    return null;
+  }
+
+  if (status === 'success') {
+    return <AuthContext.Provider value={contextValue} {...props} />;
+  }
+
+  throw new Error(`Unhandled status: ${status}`);
 };
 
 export const useAuth = () => {

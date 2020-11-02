@@ -22,13 +22,17 @@ query MobileScheduleQuery(
   ...MobileSchedule_EventList_events_1CW4ID
 }
 
+fragment MobileSchedule_CancelEventAction_event on Event {
+  id
+}
+
 fragment MobileSchedule_EventList_events_1CW4ID on RootQueryType {
   events(first: 10, searchTerm: $searchTerm) {
     edges {
       node {
         id
         startsAt
-        ...MobileSchedule_EventSummary_events
+        ...MobileSchedule_EventSummary_event
         __typename
       }
       cursor
@@ -40,13 +44,26 @@ fragment MobileSchedule_EventList_events_1CW4ID on RootQueryType {
   }
 }
 
-fragment MobileSchedule_EventSummary_events on Event {
+fragment MobileSchedule_EventNotesBottomSheet_event on Event {
+  notes
+}
+
+fragment MobileSchedule_EventRescheduleBottomSheet_event on Event {
+  id
+  startsAt
+  endsAt
+}
+
+fragment MobileSchedule_EventSummary_event on Event {
   startsAt
   endsAt
   student {
     name
     id
   }
+  ...MobileSchedule_EventNotesBottomSheet_event
+  ...MobileSchedule_EventRescheduleBottomSheet_event
+  ...MobileSchedule_CancelEventAction_event
 }
 */
 
@@ -162,6 +179,13 @@ const node: ConcreteRequest = (function () {
                       alias: null,
                       args: null,
                       kind: 'ScalarField',
+                      name: 'notes',
+                      storageKey: null,
+                    },
+                    {
+                      alias: null,
+                      args: null,
+                      kind: 'ScalarField',
                       name: '__typename',
                       storageKey: null,
                     },
@@ -218,13 +242,13 @@ const node: ConcreteRequest = (function () {
       ],
     },
     params: {
-      cacheID: 'd235ee4b926c92ee6610c8092d35c4ca',
+      cacheID: '93ec96c135d5f9c0ce1d7a7dcbd9b69c',
       id: null,
       metadata: {},
       name: 'MobileScheduleQuery',
       operationKind: 'query',
       text:
-        'query MobileScheduleQuery(\n  $searchTerm: String\n) {\n  ...MobileSchedule_EventList_events_1CW4ID\n}\n\nfragment MobileSchedule_EventList_events_1CW4ID on RootQueryType {\n  events(first: 10, searchTerm: $searchTerm) {\n    edges {\n      node {\n        id\n        startsAt\n        ...MobileSchedule_EventSummary_events\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MobileSchedule_EventSummary_events on Event {\n  startsAt\n  endsAt\n  student {\n    name\n    id\n  }\n}\n',
+        'query MobileScheduleQuery(\n  $searchTerm: String\n) {\n  ...MobileSchedule_EventList_events_1CW4ID\n}\n\nfragment MobileSchedule_CancelEventAction_event on Event {\n  id\n}\n\nfragment MobileSchedule_EventList_events_1CW4ID on RootQueryType {\n  events(first: 10, searchTerm: $searchTerm) {\n    edges {\n      node {\n        id\n        startsAt\n        ...MobileSchedule_EventSummary_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MobileSchedule_EventNotesBottomSheet_event on Event {\n  notes\n}\n\nfragment MobileSchedule_EventRescheduleBottomSheet_event on Event {\n  id\n  startsAt\n  endsAt\n}\n\nfragment MobileSchedule_EventSummary_event on Event {\n  startsAt\n  endsAt\n  student {\n    name\n    id\n  }\n  ...MobileSchedule_EventNotesBottomSheet_event\n  ...MobileSchedule_EventRescheduleBottomSheet_event\n  ...MobileSchedule_CancelEventAction_event\n}\n',
     },
   };
 })();

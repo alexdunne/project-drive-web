@@ -26,13 +26,17 @@ query EventListPaginationQuery(
   ...MobileSchedule_EventList_events_1YZSDV
 }
 
+fragment MobileSchedule_CancelEventAction_event on Event {
+  id
+}
+
 fragment MobileSchedule_EventList_events_1YZSDV on RootQueryType {
   events(first: $count, after: $cursor, searchTerm: $searchTerm) {
     edges {
       node {
         id
         startsAt
-        ...MobileSchedule_EventSummary_events
+        ...MobileSchedule_EventSummary_event
         __typename
       }
       cursor
@@ -44,13 +48,26 @@ fragment MobileSchedule_EventList_events_1YZSDV on RootQueryType {
   }
 }
 
-fragment MobileSchedule_EventSummary_events on Event {
+fragment MobileSchedule_EventNotesBottomSheet_event on Event {
+  notes
+}
+
+fragment MobileSchedule_EventRescheduleBottomSheet_event on Event {
+  id
+  startsAt
+  endsAt
+}
+
+fragment MobileSchedule_EventSummary_event on Event {
   startsAt
   endsAt
   student {
     name
     id
   }
+  ...MobileSchedule_EventNotesBottomSheet_event
+  ...MobileSchedule_EventRescheduleBottomSheet_event
+  ...MobileSchedule_CancelEventAction_event
 }
 */
 
@@ -193,6 +210,13 @@ const node: ConcreteRequest = (function () {
                       alias: null,
                       args: null,
                       kind: 'ScalarField',
+                      name: 'notes',
+                      storageKey: null,
+                    },
+                    {
+                      alias: null,
+                      args: null,
+                      kind: 'ScalarField',
                       name: '__typename',
                       storageKey: null,
                     },
@@ -249,15 +273,15 @@ const node: ConcreteRequest = (function () {
       ],
     },
     params: {
-      cacheID: '1b1058025f132a4254a51cb05f99a5b5',
+      cacheID: 'db711d7ab6c3bad159138a189fee7c79',
       id: null,
       metadata: {},
       name: 'EventListPaginationQuery',
       operationKind: 'query',
       text:
-        'query EventListPaginationQuery(\n  $count: Int = 10\n  $cursor: String\n  $searchTerm: String = ""\n) {\n  ...MobileSchedule_EventList_events_1YZSDV\n}\n\nfragment MobileSchedule_EventList_events_1YZSDV on RootQueryType {\n  events(first: $count, after: $cursor, searchTerm: $searchTerm) {\n    edges {\n      node {\n        id\n        startsAt\n        ...MobileSchedule_EventSummary_events\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MobileSchedule_EventSummary_events on Event {\n  startsAt\n  endsAt\n  student {\n    name\n    id\n  }\n}\n',
+        'query EventListPaginationQuery(\n  $count: Int = 10\n  $cursor: String\n  $searchTerm: String = ""\n) {\n  ...MobileSchedule_EventList_events_1YZSDV\n}\n\nfragment MobileSchedule_CancelEventAction_event on Event {\n  id\n}\n\nfragment MobileSchedule_EventList_events_1YZSDV on RootQueryType {\n  events(first: $count, after: $cursor, searchTerm: $searchTerm) {\n    edges {\n      node {\n        id\n        startsAt\n        ...MobileSchedule_EventSummary_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MobileSchedule_EventNotesBottomSheet_event on Event {\n  notes\n}\n\nfragment MobileSchedule_EventRescheduleBottomSheet_event on Event {\n  id\n  startsAt\n  endsAt\n}\n\nfragment MobileSchedule_EventSummary_event on Event {\n  startsAt\n  endsAt\n  student {\n    name\n    id\n  }\n  ...MobileSchedule_EventNotesBottomSheet_event\n  ...MobileSchedule_EventRescheduleBottomSheet_event\n  ...MobileSchedule_CancelEventAction_event\n}\n',
     },
   };
 })();
-(node as any).hash = 'd99a4db35a875cbac99c825d8f0fc784';
+(node as any).hash = 'ab6b818dfbbd5fbf822df1b7b6a96f2a';
 export default node;

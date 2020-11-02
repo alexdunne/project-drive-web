@@ -5,12 +5,10 @@ import {
   FormErrorMessage,
   FormLabel,
   Grid,
-  Heading,
   Input,
   Stack,
 } from '@chakra-ui/core';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useService } from '@xstate/react';
 import addHours from 'date-fns/addHours';
 import format from 'date-fns/format';
 import isAfter from 'date-fns/isAfter';
@@ -23,7 +21,7 @@ import * as yup from 'yup';
 
 import { LessonTimeForm_eventConflictsCheck_Query } from '../../__generated__/LessonTimeForm_eventConflictsCheck_Query.graphql';
 import { UserFacingError } from '../../error/BaseErrors';
-import { LessonFormService } from './machine';
+import { BottomSheetHeader } from '../BottomSheetHeader';
 
 const eventConflictsCheckQuery = graphql`
   query LessonTimeForm_eventConflictsCheck_Query($input: EventConflictsCheckInput!) {
@@ -56,32 +54,34 @@ interface FormValues {
 }
 
 interface LessonTimeFormProps {
-  service: LessonFormService;
+  defaultValues?: {
+    startsAt: Date;
+    endsAt: Date;
+  };
+  onSubmit: (data: FormValues) => void;
 }
 
-export const LessonTimeForm: React.FC<LessonTimeFormProps> = (props) => {
+export const LessonTimeForm: React.FC<LessonTimeFormProps> = ({ defaultValues, onSubmit }) => {
   const environment = useRelayEnvironment();
-  const [current, send] = useService(props.service);
 
-  const defaultValues = useMemo(() => {
-    const { times } = current.context;
-
-    const startsAt = times?.startsAt ?? roundToNearestMinutes(new Date(), { nearestTo: 15 });
+  const defaultFormValues = useMemo(() => {
+    const startsAt =
+      defaultValues?.startsAt ?? roundToNearestMinutes(new Date(), { nearestTo: 15 });
     const endsAt =
-      times?.endsAt ?? roundToNearestMinutes(addHours(new Date(), 1), { nearestTo: 15 });
+      defaultValues?.endsAt ?? roundToNearestMinutes(addHours(new Date(), 1), { nearestTo: 15 });
 
     return {
       date: format(startsAt, 'yyyy-MM-dd'),
       startTime: format(startsAt, 'HH:mm'),
       endTime: format(endsAt, 'HH:mm'),
     };
-  }, [current.context]);
+  }, [defaultValues]);
 
   const { register, handleSubmit, errors, formState, setError, watch, clearErrors } = useForm<
     FormValues
   >({
     resolver: yupResolver(schema),
-    defaultValues: defaultValues,
+    defaultValues: defaultFormValues,
   });
 
   const { date, startTime, endTime } = watch(['date', 'startTime', 'endTime']);
@@ -90,7 +90,7 @@ export const LessonTimeForm: React.FC<LessonTimeFormProps> = (props) => {
     clearErrors();
   }, [date, startTime, endTime, clearErrors]);
 
-  const onSubmit = useCallback(
+  const onFormSubmit = useCallback(
     async (data: FormValues) => {
       const startsAt = parse(data.startTime, 'HH:mm', data.date);
       const endsAt = parse(data.endTime, 'HH:mm', data.date);
@@ -120,26 +120,16 @@ export const LessonTimeForm: React.FC<LessonTimeFormProps> = (props) => {
         return;
       }
 
-      send({
-        type: 'NEXT',
-        times: {
-          startsAt,
-          endsAt,
-        },
-      });
+      onSubmit(data);
     },
-    [environment, setError, send]
+    [environment, setError, onSubmit]
   );
 
-  console.log(errors);
-
   return (
-    <Stack spacing={2} px={4} pt={4}>
-      <Heading as="h3" fontSize="lg" textAlign="center">
-        Schedule a lesson
-      </Heading>
+    <Stack spacing={2} px={4} pt={2}>
+      <BottomSheetHeader>Schedule a lesson</BottomSheetHeader>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onFormSubmit)}>
         <Stack spacing={4}>
           <FormControl isInvalid={Boolean(errors.date)}>
             <FormLabel htmlFor="date">Date</FormLabel>

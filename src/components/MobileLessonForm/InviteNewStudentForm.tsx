@@ -1,12 +1,4 @@
-import {
-  Button,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Heading,
-  Input,
-  Stack,
-} from '@chakra-ui/core';
+import { Button, FormControl, FormErrorMessage, FormLabel, Input, Stack } from '@chakra-ui/core';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useService } from '@xstate/react';
 import React from 'react';
@@ -16,6 +8,7 @@ import * as yup from 'yup';
 
 import { InviteNewStudentForm_CreateStudentInviteMutation } from '../../__generated__/InviteNewStudentForm_CreateStudentInviteMutation.graphql';
 import { ApiError } from '../../error/ApiError';
+import { BottomSheetHeader } from '../BottomSheetHeader';
 import { LessonFormService } from './machine';
 
 const schema = yup.object().shape({
@@ -103,10 +96,10 @@ export const InviteNewStudentForm: React.FC<InviteNewStudentFormProps> = (props)
   const isSubmitting = formState.isSubmitting || isInFlight;
 
   return (
-    <Stack spacing={2} px={4} pt={4}>
-      <Heading as="h3" fontSize="lg" textAlign="center">
+    <Stack spacing={2} px={4} pt={2}>
+      <BottomSheetHeader onBack={() => send({ type: 'PREVIOUS' })}>
         Invite a new student
-      </Heading>
+      </BottomSheetHeader>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={4}>

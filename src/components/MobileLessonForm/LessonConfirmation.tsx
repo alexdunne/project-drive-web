@@ -1,4 +1,4 @@
-import { Box, Button, Heading, Stack, Text } from '@chakra-ui/core';
+import { Box, Button, Grid, Heading, Stack, Text } from '@chakra-ui/core';
 import { useService } from '@xstate/react';
 import format from 'date-fns/format';
 import React, { useCallback } from 'react';
@@ -6,6 +6,7 @@ import { graphql, useMutation } from 'react-relay/hooks';
 import { ConnectionHandler } from 'relay-runtime';
 
 import { LessonConfirmation_CreateLessonMutation } from '../../__generated__/LessonConfirmation_CreateLessonMutation.graphql';
+import { BottomSheetHeader } from '../BottomSheetHeader';
 import { LessonFormService } from './machine';
 
 interface LessonConfirmationProps {
@@ -60,7 +61,13 @@ export const LessonConfirmation: React.FC<LessonConfirmationProps> = (props) => 
         send({ type: 'LESSON_SCHEDULED' });
       },
       updater: (store) => {
-        const lesson = store.getRootField('createLesson').getLinkedRecord('lesson');
+        const createLessonRoot = store.getRootField('createLesson');
+
+        if (!createLessonRoot) {
+          return;
+        }
+
+        const lesson = createLessonRoot.getLinkedRecord('lesson');
 
         const root = store.getRoot();
         const events = ConnectionHandler.getConnection(root, 'EventList_events');
@@ -85,10 +92,8 @@ export const LessonConfirmation: React.FC<LessonConfirmationProps> = (props) => 
   const { times, student, notes } = current.context;
 
   return (
-    <Stack spacing={2} px={4} pt={4}>
-      <Heading as="h3" fontSize="lg" textAlign="center">
-        Confirmation
-      </Heading>
+    <Stack spacing={2} px={4} pt={2}>
+      <BottomSheetHeader onBack={() => send({ type: 'PREVIOUS' })}>Confirmation</BottomSheetHeader>
 
       <Box>
         <Stack spacing={4}>
@@ -97,7 +102,9 @@ export const LessonConfirmation: React.FC<LessonConfirmationProps> = (props) => 
               Date
             </Heading>
 
-            <Text>{format(times.startsAt, 'EEEE, do MMM')}</Text>
+            <Detail onChangeRequested={() => send({ type: 'GO_TO_TIME_SELECTION' })}>
+              <Text>{format(times.startsAt, 'EEEE, do MMM')}</Text>
+            </Detail>
           </Box>
 
           <Box>
@@ -105,9 +112,11 @@ export const LessonConfirmation: React.FC<LessonConfirmationProps> = (props) => 
               Times
             </Heading>
 
-            <Text>
-              {format(times.startsAt, 'HH:mm')} - {format(times.endsAt, 'HH:mm')}
-            </Text>
+            <Detail onChangeRequested={() => send({ type: 'GO_TO_TIME_SELECTION' })}>
+              <Text>
+                {format(times.startsAt, 'HH:mm')} - {format(times.endsAt, 'HH:mm')}
+              </Text>
+            </Detail>
           </Box>
 
           <Box>
@@ -115,7 +124,9 @@ export const LessonConfirmation: React.FC<LessonConfirmationProps> = (props) => 
               Student
             </Heading>
 
-            <Text>{student.name}</Text>
+            <Detail onChangeRequested={() => send({ type: 'GO_TO_STUDENT_SELECTION' })}>
+              <Text>{student.name}</Text>
+            </Detail>
           </Box>
 
           <Box>
@@ -123,7 +134,9 @@ export const LessonConfirmation: React.FC<LessonConfirmationProps> = (props) => 
               Notes
             </Heading>
 
-            <Text>{notes && notes.length > 50 ? `${notes?.substring(0, 47)}...` : notes}</Text>
+            <Detail onChangeRequested={() => send({ type: 'GO_TO_NOTES' })}>
+              <Text>{notes && notes.length > 50 ? `${notes?.substring(0, 47)}...` : notes}</Text>
+            </Detail>
           </Box>
 
           <Box pt={6}>
@@ -146,5 +159,23 @@ export const LessonConfirmation: React.FC<LessonConfirmationProps> = (props) => 
         </Stack>
       </Box>
     </Stack>
+  );
+};
+
+interface DetailProps {
+  onChangeRequested: () => void;
+}
+
+const Detail: React.FC<DetailProps> = (props) => {
+  return (
+    <Grid gridTemplateColumns="auto auto" gridColumnGap="30px" alignItems="center">
+      {props.children}
+
+      <Box textAlign="right">
+        <Button variant="link" color="teal.400" p={2} onClick={props.onChangeRequested}>
+          Change
+        </Button>
+      </Box>
+    </Grid>
   );
 };

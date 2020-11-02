@@ -1,4 +1,5 @@
 import { useMachine, useService } from '@xstate/react';
+import parse from 'date-fns/parse';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { Suspense, useCallback, useEffect, useState } from 'react';
 import Sheet, { SheetRef } from 'react-modal-sheet';
@@ -70,7 +71,7 @@ interface FormProps {
 }
 
 const Form: React.FC<FormProps> = (props) => {
-  const [current] = useService(props.service);
+  const [current, send] = useService(props.service);
 
   const [queryReference, loadQuery] = useQueryLoader(StudentSelectionFormPreloadQuery);
 
@@ -90,7 +91,18 @@ const Form: React.FC<FormProps> = (props) => {
     case current.matches('timeSelection'):
       return (
         <AnimatedWrapper key="lesson_time_form">
-          <LessonTimeForm service={props.service} />
+          <LessonTimeForm
+            defaultValues={current.context.times}
+            onSubmit={(data) => {
+              send({
+                type: 'NEXT',
+                times: {
+                  startsAt: parse(data.startTime, 'HH:mm', data.date),
+                  endsAt: parse(data.endTime, 'HH:mm', data.date),
+                },
+              });
+            }}
+          />
         </AnimatedWrapper>
       );
     case current.matches('studentSelection'):

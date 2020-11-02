@@ -1,18 +1,11 @@
-import {
-  Button,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Heading,
-  Stack,
-  Textarea,
-} from '@chakra-ui/core';
+import { Button, FormControl, FormErrorMessage, FormLabel, Stack, Textarea } from '@chakra-ui/core';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useService } from '@xstate/react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 
+import { BottomSheetHeader } from '../BottomSheetHeader';
 import { LessonFormService } from './machine';
 
 const schema = yup.object().shape({
@@ -28,12 +21,12 @@ interface LessonNotesFormProps {
 }
 
 export const LessonNotesForm: React.FC<LessonNotesFormProps> = (props) => {
-  const [_current, send] = useService(props.service);
+  const [current, send] = useService(props.service);
 
   const { register, handleSubmit, errors, formState } = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues: {
-      notes: '',
+      notes: current.context.notes ?? '',
     },
   });
 
@@ -45,10 +38,10 @@ export const LessonNotesForm: React.FC<LessonNotesFormProps> = (props) => {
   };
 
   return (
-    <Stack spacing={2} px={4} pt={4}>
-      <Heading as="h3" fontSize="lg" textAlign="center">
+    <Stack spacing={2} px={4} pt={2}>
+      <BottomSheetHeader onBack={() => send({ type: 'PREVIOUS' })}>
         Finishing touches
-      </Heading>
+      </BottomSheetHeader>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={4}>
