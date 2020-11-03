@@ -1,4 +1,5 @@
 {
+  "ignorePatterns": ["**/__generated__/*.ts"],
   "plugins": ["relay", "simple-import-sort"],
   "extends": ["react-app", "plugin:relay/recommended", "prettier"],
   "rules": {
