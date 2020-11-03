@@ -53,7 +53,7 @@ const MobileSchedule = () => {
         ...MobileSchedule_EventList_events @arguments(searchTerm: $searchTerm)
       }
     `,
-    {}
+    { searchTerm: deferredSearchTerm }
   );
 
   return (
@@ -81,7 +81,7 @@ const MobileSchedule = () => {
 
         <Box>
           <Suspense fallback={<p>Fetching events</p>}>
-            <EventList events={events} searchTerm={deferredSearchTerm} />
+            <EventList events={events} />
           </Suspense>
         </Box>
       </Stack>
@@ -93,17 +93,16 @@ const MobileSchedule = () => {
 
 interface EventListProps {
   events: MobileSchedule_EventList_events$key;
-  searchTerm?: string;
 }
 
 const EventList: React.FC<EventListProps> = (props) => {
-  const { data, refetch } = usePaginationFragment(
+  const { data } = usePaginationFragment(
     graphql`
       fragment MobileSchedule_EventList_events on RootQueryType
       @argumentDefinitions(
         count: { type: "Int", defaultValue: 10 }
         cursor: { type: "String" }
-        searchTerm: { type: "String", defaultValue: "" }
+        searchTerm: { type: "String!", defaultValue: "" }
       )
       @refetchable(queryName: "EventListPaginationQuery") {
         events(first: $count, after: $cursor, searchTerm: $searchTerm)
@@ -120,10 +119,6 @@ const EventList: React.FC<EventListProps> = (props) => {
     `,
     props.events
   );
-
-  useEffect(() => {
-    refetch({ first: 10, searchTerm: props.searchTerm });
-  }, [refetch, props.searchTerm]);
 
   return (
     <List listStyleType="none" spacing={6}>

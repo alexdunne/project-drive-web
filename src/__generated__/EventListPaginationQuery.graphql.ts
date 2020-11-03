@@ -7,7 +7,7 @@ import { FragmentRefs } from "relay-runtime";
 export type EventListPaginationQueryVariables = {
     count?: number | null;
     cursor?: string | null;
-    searchTerm?: string | null;
+    searchTerm: string;
 };
 export type EventListPaginationQueryResponse = {
     readonly " $fragmentRefs": FragmentRefs<"MobileSchedule_EventList_events">;
@@ -23,7 +23,7 @@ export type EventListPaginationQuery = {
 query EventListPaginationQuery(
   $count: Int = 10
   $cursor: String
-  $searchTerm: String = ""
+  $searchTerm: String! = ""
 ) {
   ...MobileSchedule_EventList_events_1YZSDV
 }
@@ -275,14 +275,14 @@ return {
     ]
   },
   "params": {
-    "cacheID": "db711d7ab6c3bad159138a189fee7c79",
+    "cacheID": "8421829e5219a0ae722f50fa20228534",
     "id": null,
     "metadata": {},
     "name": "EventListPaginationQuery",
     "operationKind": "query",
-    "text": "query EventListPaginationQuery(\n  $count: Int = 10\n  $cursor: String\n  $searchTerm: String = \"\"\n) {\n  ...MobileSchedule_EventList_events_1YZSDV\n}\n\nfragment MobileSchedule_CancelEventAction_event on Event {\n  id\n}\n\nfragment MobileSchedule_EventList_events_1YZSDV on RootQueryType {\n  events(first: $count, after: $cursor, searchTerm: $searchTerm) {\n    edges {\n      node {\n        id\n        startsAt\n        ...MobileSchedule_EventSummary_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MobileSchedule_EventNotesBottomSheet_event on Event {\n  notes\n}\n\nfragment MobileSchedule_EventRescheduleBottomSheet_event on Event {\n  id\n  startsAt\n  endsAt\n}\n\nfragment MobileSchedule_EventSummary_event on Event {\n  startsAt\n  endsAt\n  student {\n    name\n    id\n  }\n  ...MobileSchedule_EventNotesBottomSheet_event\n  ...MobileSchedule_EventRescheduleBottomSheet_event\n  ...MobileSchedule_CancelEventAction_event\n}\n"
+    "text": "query EventListPaginationQuery(\n  $count: Int = 10\n  $cursor: String\n  $searchTerm: String! = \"\"\n) {\n  ...MobileSchedule_EventList_events_1YZSDV\n}\n\nfragment MobileSchedule_CancelEventAction_event on Event {\n  id\n}\n\nfragment MobileSchedule_EventList_events_1YZSDV on RootQueryType {\n  events(first: $count, after: $cursor, searchTerm: $searchTerm) {\n    edges {\n      node {\n        id\n        startsAt\n        ...MobileSchedule_EventSummary_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MobileSchedule_EventNotesBottomSheet_event on Event {\n  notes\n}\n\nfragment MobileSchedule_EventRescheduleBottomSheet_event on Event {\n  id\n  startsAt\n  endsAt\n}\n\nfragment MobileSchedule_EventSummary_event on Event {\n  startsAt\n  endsAt\n  student {\n    name\n    id\n  }\n  ...MobileSchedule_EventNotesBottomSheet_event\n  ...MobileSchedule_EventRescheduleBottomSheet_event\n  ...MobileSchedule_CancelEventAction_event\n}\n"
   }
 };
 })();
-(node as any).hash = 'ab6b818dfbbd5fbf822df1b7b6a96f2a';
+(node as any).hash = '9938b81f84bfbc95fcec809546c9e622';
 export default node;
