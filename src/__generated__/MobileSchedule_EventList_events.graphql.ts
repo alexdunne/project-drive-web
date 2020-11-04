@@ -10,6 +10,9 @@ export type MobileSchedule_EventList_events = {
             readonly node: {
                 readonly id: string;
                 readonly startsAt: string;
+                readonly student: {
+                    readonly name: string;
+                };
                 readonly " $fragmentRefs": FragmentRefs<"MobileSchedule_EventSummary_event">;
             } | null;
         } | null> | null;
@@ -73,7 +76,13 @@ return {
   "selections": [
     {
       "alias": "events",
-      "args": null,
+      "args": [
+        {
+          "kind": "Variable",
+          "name": "searchTerm",
+          "variableName": "searchTerm"
+        }
+      ],
       "concreteType": "EventConnection",
       "kind": "LinkedField",
       "name": "__EventList_events_connection",
@@ -107,6 +116,24 @@ return {
                   "args": null,
                   "kind": "ScalarField",
                   "name": "startsAt",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "concreteType": "Student",
+                  "kind": "LinkedField",
+                  "name": "student",
+                  "plural": false,
+                  "selections": [
+                    {
+                      "alias": null,
+                      "args": null,
+                      "kind": "ScalarField",
+                      "name": "name",
+                      "storageKey": null
+                    }
+                  ],
                   "storageKey": null
                 },
                 {
@@ -167,5 +194,5 @@ return {
   "abstractKey": null
 };
 })();
-(node as any).hash = '9938b81f84bfbc95fcec809546c9e622';
+(node as any).hash = '8eb869f8801a5a4a4fdc7f9bb12cac26';
 export default node;

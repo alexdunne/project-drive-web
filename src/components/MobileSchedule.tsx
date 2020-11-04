@@ -12,7 +12,15 @@ import format from 'date-fns/format';
 import isToday from 'date-fns/isToday';
 import isTomorrow from 'date-fns/isTomorrow';
 import parse from 'date-fns/parse';
-import React, { Fragment, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  Fragment,
+  Suspense,
+  unstable_useTransition,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { IconType } from 'react-icons';
 import { FiAlertCircle, FiCalendar, FiFile, FiPlus } from 'react-icons/fi';
 import Sheet from 'react-modal-sheet';
@@ -45,16 +53,20 @@ const MobileSchedule = () => {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [searchInputValue, setSearchInputValue] = useState('');
 
-  const deferredSearchTerm = useDebounce(searchInputValue);
-
   const events = useLazyLoadQuery<MobileScheduleQuery>(
     graphql`
-      query MobileScheduleQuery($searchTerm: String) {
-        ...MobileSchedule_EventList_events @arguments(searchTerm: $searchTerm)
+      query MobileScheduleQuery {
+        ...MobileSchedule_EventList_events
       }
     `,
-    { searchTerm: deferredSearchTerm }
+    {}
   );
+
+  useEffect(() => {
+    if (!isOpen) {
+      setSearchInputValue('');
+    }
+  }, [isOpen]);
 
   return (
     <Fragment>
@@ -81,7 +93,7 @@ const MobileSchedule = () => {
 
         <Box>
           <Suspense fallback={<p>Fetching events</p>}>
-            <EventList events={events} />
+            <EventList events={events} searchTerm={searchInputValue} />
           </Suspense>
         </Box>
       </Stack>
@@ -93,10 +105,15 @@ const MobileSchedule = () => {
 
 interface EventListProps {
   events: MobileSchedule_EventList_events$key;
+  searchTerm: string;
 }
 
 const EventList: React.FC<EventListProps> = (props) => {
-  const { data } = usePaginationFragment(
+  const debouncedSearchTerm = useDebounce(props.searchTerm);
+
+  const [startTransition] = unstable_useTransition();
+
+  const { data, refetch } = usePaginationFragment(
     graphql`
       fragment MobileSchedule_EventList_events on RootQueryType
       @argumentDefinitions(
@@ -106,11 +123,14 @@ const EventList: React.FC<EventListProps> = (props) => {
       )
       @refetchable(queryName: "EventListPaginationQuery") {
         events(first: $count, after: $cursor, searchTerm: $searchTerm)
-          @connection(key: "EventList_events", filters: []) {
+          @connection(key: "EventList_events", filters: ["searchTerm"]) {
           edges {
             node {
               id
               startsAt
+              student {
+                name
+              }
               ...MobileSchedule_EventSummary_event
             }
           }
@@ -119,6 +139,12 @@ const EventList: React.FC<EventListProps> = (props) => {
     `,
     props.events
   );
+
+  useEffect(() => {
+    startTransition(() => {
+      refetch({ searchTerm: debouncedSearchTerm });
+    });
+  }, [startTransition, refetch, debouncedSearchTerm]);
 
   return (
     <List listStyleType="none" spacing={6}>

@@ -4,9 +4,7 @@
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type MobileScheduleQueryVariables = {
-    searchTerm?: string | null;
-};
+export type MobileScheduleQueryVariables = {};
 export type MobileScheduleQueryResponse = {
     readonly " $fragmentRefs": FragmentRefs<"MobileSchedule_EventList_events">;
 };
@@ -18,22 +16,24 @@ export type MobileScheduleQuery = {
 
 
 /*
-query MobileScheduleQuery(
-  $searchTerm: String
-) {
-  ...MobileSchedule_EventList_events_1CW4ID
+query MobileScheduleQuery {
+  ...MobileSchedule_EventList_events
 }
 
 fragment MobileSchedule_CancelEventAction_event on Event {
   id
 }
 
-fragment MobileSchedule_EventList_events_1CW4ID on RootQueryType {
-  events(first: 10, searchTerm: $searchTerm) {
+fragment MobileSchedule_EventList_events on RootQueryType {
+  events(first: 10, searchTerm: "") {
     edges {
       node {
         id
         startsAt
+        student {
+          name
+          id
+        }
         ...MobileSchedule_EventSummary_event
         __typename
       }
@@ -72,25 +72,17 @@ fragment MobileSchedule_EventSummary_event on Event {
 const node: ConcreteRequest = (function(){
 var v0 = [
   {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "searchTerm"
-  }
-],
-v1 = {
-  "kind": "Variable",
-  "name": "searchTerm",
-  "variableName": "searchTerm"
-},
-v2 = [
-  {
     "kind": "Literal",
     "name": "first",
     "value": 10
   },
-  (v1/*: any*/)
+  {
+    "kind": "Literal",
+    "name": "searchTerm",
+    "value": ""
+  }
 ],
-v3 = {
+v1 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -99,15 +91,13 @@ v3 = {
 };
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [],
     "kind": "Fragment",
     "metadata": null,
     "name": "MobileScheduleQuery",
     "selections": [
       {
-        "args": [
-          (v1/*: any*/)
-        ],
+        "args": null,
         "kind": "FragmentSpread",
         "name": "MobileSchedule_EventList_events"
       }
@@ -117,13 +107,13 @@ return {
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [],
     "kind": "Operation",
     "name": "MobileScheduleQuery",
     "selections": [
       {
         "alias": null,
-        "args": (v2/*: any*/),
+        "args": (v0/*: any*/),
         "concreteType": "EventConnection",
         "kind": "LinkedField",
         "name": "events",
@@ -145,19 +135,12 @@ return {
                 "name": "node",
                 "plural": false,
                 "selections": [
-                  (v3/*: any*/),
+                  (v1/*: any*/),
                   {
                     "alias": null,
                     "args": null,
                     "kind": "ScalarField",
                     "name": "startsAt",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "endsAt",
                     "storageKey": null
                   },
                   {
@@ -175,8 +158,15 @@ return {
                         "name": "name",
                         "storageKey": null
                       },
-                      (v3/*: any*/)
+                      (v1/*: any*/)
                     ],
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "endsAt",
                     "storageKey": null
                   },
                   {
@@ -232,12 +222,14 @@ return {
             "storageKey": null
           }
         ],
-        "storageKey": null
+        "storageKey": "events(first:10,searchTerm:\"\")"
       },
       {
         "alias": null,
-        "args": (v2/*: any*/),
-        "filters": [],
+        "args": (v0/*: any*/),
+        "filters": [
+          "searchTerm"
+        ],
         "handle": "connection",
         "key": "EventList_events",
         "kind": "LinkedHandle",
@@ -246,14 +238,14 @@ return {
     ]
   },
   "params": {
-    "cacheID": "93ec96c135d5f9c0ce1d7a7dcbd9b69c",
+    "cacheID": "5e23457f9e4c880ffdea940faf79bb9e",
     "id": null,
     "metadata": {},
     "name": "MobileScheduleQuery",
     "operationKind": "query",
-    "text": "query MobileScheduleQuery(\n  $searchTerm: String\n) {\n  ...MobileSchedule_EventList_events_1CW4ID\n}\n\nfragment MobileSchedule_CancelEventAction_event on Event {\n  id\n}\n\nfragment MobileSchedule_EventList_events_1CW4ID on RootQueryType {\n  events(first: 10, searchTerm: $searchTerm) {\n    edges {\n      node {\n        id\n        startsAt\n        ...MobileSchedule_EventSummary_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MobileSchedule_EventNotesBottomSheet_event on Event {\n  notes\n}\n\nfragment MobileSchedule_EventRescheduleBottomSheet_event on Event {\n  id\n  startsAt\n  endsAt\n}\n\nfragment MobileSchedule_EventSummary_event on Event {\n  startsAt\n  endsAt\n  student {\n    name\n    id\n  }\n  ...MobileSchedule_EventNotesBottomSheet_event\n  ...MobileSchedule_EventRescheduleBottomSheet_event\n  ...MobileSchedule_CancelEventAction_event\n}\n"
+    "text": "query MobileScheduleQuery {\n  ...MobileSchedule_EventList_events\n}\n\nfragment MobileSchedule_CancelEventAction_event on Event {\n  id\n}\n\nfragment MobileSchedule_EventList_events on RootQueryType {\n  events(first: 10, searchTerm: \"\") {\n    edges {\n      node {\n        id\n        startsAt\n        student {\n          name\n          id\n        }\n        ...MobileSchedule_EventSummary_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment MobileSchedule_EventNotesBottomSheet_event on Event {\n  notes\n}\n\nfragment MobileSchedule_EventRescheduleBottomSheet_event on Event {\n  id\n  startsAt\n  endsAt\n}\n\nfragment MobileSchedule_EventSummary_event on Event {\n  startsAt\n  endsAt\n  student {\n    name\n    id\n  }\n  ...MobileSchedule_EventNotesBottomSheet_event\n  ...MobileSchedule_EventRescheduleBottomSheet_event\n  ...MobileSchedule_CancelEventAction_event\n}\n"
   }
 };
 })();
-(node as any).hash = '5ff5cc1e7495542fea6f360f548e86b8';
+(node as any).hash = '3b895b1f8dc8b348a97e0c43f7a9aed8';
 export default node;
