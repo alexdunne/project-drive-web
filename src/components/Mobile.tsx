@@ -6,6 +6,7 @@ import { FullPageSpinner } from './FullPageSpinner';
 import { Todo } from './Todo';
 
 const MobileSchedule = React.lazy(() => import('./MobileSchedule'));
+const MobileScheduleV2 = React.lazy(() => import('./MobileScheduleV2'));
 
 const Mobile = () => {
   return (
@@ -19,10 +20,12 @@ const Mobile = () => {
                 <Fragment>
                   <Todo />
                   <Link to="/schedule">Schedule</Link>
+                  <Link to="/schedulev2">Schedule</Link>
                 </Fragment>
               }
             />
             <Route path="/schedule" element={<MobileSchedule />} />
+            <Route path="/schedulev2" element={<MobileScheduleV2 />} />
           </Routes>
         </Router>
       </Suspense>

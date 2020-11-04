@@ -66,6 +66,12 @@ type EventConnection {
   pageInfo: PageInfo!
 }
 
+"""Inclusive date range"""
+input EventDateFiltersType {
+  end: DateTime!
+  start: DateTime!
+}
+
 type EventEdge {
   cursor: String
   node: Event
@@ -117,11 +123,12 @@ type RootMutationType {
 
 type RootQueryType {
   eventConflictsCheck(input: EventConflictsCheckInput!): EventConflictsCheckPayload
-  events(after: String, before: String, first: Int, last: Int, searchTerm: String): EventConnection
+  events(after: String, before: String, first: Int, last: Int, searchTerm: String): EventConnection @deprecated(reason: "Use schedule instead")
   node(
     """The id of an object."""
     id: ID!
   ): Node
+  schedule(after: String, before: String, between: EventDateFiltersType!, first: Int, last: Int): EventConnection
   students(after: String, before: String, first: Int, last: Int, searchTerm: String): StudentConnection
 }
 
