@@ -32,6 +32,7 @@ fragment MobileScheduleV2_EventList_schedule_R4GVn on RootQueryType {
       node {
         id
         startsAt
+        endsAt
         student {
           name
           id
@@ -153,6 +154,13 @@ return {
                   {
                     "alias": null,
                     "args": null,
+                    "kind": "ScalarField",
+                    "name": "endsAt",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
                     "concreteType": "Student",
                     "kind": "LinkedField",
                     "name": "student",
@@ -231,12 +239,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "4e136118dd540c0f1e4b7dff222d7833",
+    "cacheID": "7331c20ae38feaa29fe3a2b421048fa7",
     "id": null,
     "metadata": {},
     "name": "MobileScheduleV2Query",
     "operationKind": "query",
-    "text": "query MobileScheduleV2Query(\n  $start: DateTime!\n  $end: DateTime!\n) {\n  ...MobileScheduleV2_EventList_schedule_R4GVn\n}\n\nfragment MobileScheduleV2_EventList_schedule_R4GVn on RootQueryType {\n  schedule(first: 10, between: {start: $start, end: $end}) {\n    edges {\n      node {\n        id\n        startsAt\n        student {\n          name\n          id\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
+    "text": "query MobileScheduleV2Query(\n  $start: DateTime!\n  $end: DateTime!\n) {\n  ...MobileScheduleV2_EventList_schedule_R4GVn\n}\n\nfragment MobileScheduleV2_EventList_schedule_R4GVn on RootQueryType {\n  schedule(first: 10, between: {start: $start, end: $end}) {\n    edges {\n      node {\n        id\n        startsAt\n        endsAt\n        student {\n          name\n          id\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
   }
 };
 })();

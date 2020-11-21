@@ -10,6 +10,7 @@ export type MobileScheduleV2_EventList_schedule = {
             readonly node: {
                 readonly id: string;
                 readonly startsAt: string;
+                readonly endsAt: string;
                 readonly student: {
                     readonly name: string;
                 };
@@ -136,6 +137,13 @@ return {
                 {
                   "alias": null,
                   "args": null,
+                  "kind": "ScalarField",
+                  "name": "endsAt",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
                   "concreteType": "Student",
                   "kind": "LinkedField",
                   "name": "student",
@@ -204,5 +212,5 @@ return {
   "abstractKey": null
 };
 })();
-(node as any).hash = '8ffa810c777e1cd7dc713bbeb6aab7fc';
+(node as any).hash = '1b84cbe8814d1bda47313a3745c1eaf2';
 export default node;

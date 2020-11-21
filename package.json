@@ -26,6 +26,9 @@
     "react-router": "^6.0.0-beta.0",
     "react-router-dom": "^6.0.0-beta.0",
     "react-scripts": "4.0.0",
+    "react-virtualized-auto-sizer": "^1.0.2",
+    "react-window": "^1.8.6",
+    "react-window-infinite-loader": "^1.0.5",
     "xstate": "^4.13.0",
     "yup": "^0.29.3"
   },
@@ -65,6 +68,8 @@
     "@types/react-dom": "^16.9.8",
     "@types/react-relay": "^7.0.15",
     "@types/react-responsive": "^8.0.2",
+    "@types/react-virtualized-auto-sizer": "^1.0.0",
+    "@types/react-window-infinite-loader": "^1.0.3",
     "@types/relay-runtime": "^10.0.9",
     "@types/yup": "^0.29.8",
     "babel-plugin-relay": "^10.0.1",

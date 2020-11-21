@@ -36,6 +36,7 @@ fragment MobileScheduleV2_EventList_schedule_1sRpVw on RootQueryType {
       node {
         id
         startsAt
+        endsAt
         student {
           name
           id
@@ -182,6 +183,13 @@ return {
                   {
                     "alias": null,
                     "args": null,
+                    "kind": "ScalarField",
+                    "name": "endsAt",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
                     "concreteType": "Student",
                     "kind": "LinkedField",
                     "name": "student",
@@ -260,14 +268,14 @@ return {
     ]
   },
   "params": {
-    "cacheID": "65a82011cc19982cb0034b246389d4c1",
+    "cacheID": "dabd23460c1ed77d37bc7573946d80a9",
     "id": null,
     "metadata": {},
     "name": "EventListPaginationQuery2",
     "operationKind": "query",
-    "text": "query EventListPaginationQuery2(\n  $count: Int = 10\n  $cursor: String\n  $end: DateTime!\n  $start: DateTime!\n) {\n  ...MobileScheduleV2_EventList_schedule_1sRpVw\n}\n\nfragment MobileScheduleV2_EventList_schedule_1sRpVw on RootQueryType {\n  schedule(first: $count, after: $cursor, between: {start: $start, end: $end}) {\n    edges {\n      node {\n        id\n        startsAt\n        student {\n          name\n          id\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
+    "text": "query EventListPaginationQuery2(\n  $count: Int = 10\n  $cursor: String\n  $end: DateTime!\n  $start: DateTime!\n) {\n  ...MobileScheduleV2_EventList_schedule_1sRpVw\n}\n\nfragment MobileScheduleV2_EventList_schedule_1sRpVw on RootQueryType {\n  schedule(first: $count, after: $cursor, between: {start: $start, end: $end}) {\n    edges {\n      node {\n        id\n        startsAt\n        endsAt\n        student {\n          name\n          id\n        }\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
   }
 };
 })();
-(node as any).hash = '8ffa810c777e1cd7dc713bbeb6aab7fc';
+(node as any).hash = '1b84cbe8814d1bda47313a3745c1eaf2';
 export default node;

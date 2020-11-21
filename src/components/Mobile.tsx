@@ -1,3 +1,4 @@
+import { Box } from '@chakra-ui/core';
 import React, { Fragment, Suspense } from 'react';
 import { BrowserRouter as Router, Link, Route, Routes } from 'react-router-dom';
 
@@ -10,26 +11,28 @@ const MobileScheduleV2 = React.lazy(() => import('./MobileScheduleV2'));
 
 const Mobile = () => {
   return (
-    <ErrorBoundary>
-      <Suspense fallback={<FullPageSpinner />}>
-        <Router>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <Fragment>
-                  <Todo />
-                  <Link to="/schedule">Schedule</Link>
-                  <Link to="/schedulev2">Schedule</Link>
-                </Fragment>
-              }
-            />
-            <Route path="/schedule" element={<MobileSchedule />} />
-            <Route path="/schedulev2" element={<MobileScheduleV2 />} />
-          </Routes>
-        </Router>
-      </Suspense>
-    </ErrorBoundary>
+    <Box height="100vh" bg="gray.800">
+      <ErrorBoundary>
+        <Suspense fallback={<FullPageSpinner />}>
+          <Router>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <Fragment>
+                    <Todo />
+                    <Link to="/schedule">Schedule</Link>
+                    <Link to="/schedulev2">Schedule</Link>
+                  </Fragment>
+                }
+              />
+              <Route path="/schedule" element={<MobileSchedule />} />
+              <Route path="/schedulev2" element={<MobileScheduleV2 />} />
+            </Routes>
+          </Router>
+        </Suspense>
+      </ErrorBoundary>
+    </Box>
   );
 };
 
