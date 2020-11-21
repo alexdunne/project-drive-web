@@ -66,9 +66,9 @@ export const LessonTimeForm: React.FC<LessonTimeFormProps> = ({ defaultValues, o
 
   const defaultFormValues = useMemo(() => {
     const startsAt =
-      defaultValues?.startsAt ?? roundToNearestMinutes(new Date(), { nearestTo: 15 });
+      defaultValues?.startsAt ?? roundToNearestMinutes(addHours(new Date(), 1), { nearestTo: 15 });
     const endsAt =
-      defaultValues?.endsAt ?? roundToNearestMinutes(addHours(new Date(), 1), { nearestTo: 15 });
+      defaultValues?.endsAt ?? roundToNearestMinutes(addHours(new Date(), 2), { nearestTo: 15 });
 
     return {
       date: format(startsAt, 'yyyy-MM-dd'),
