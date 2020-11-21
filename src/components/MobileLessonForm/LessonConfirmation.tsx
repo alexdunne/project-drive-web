@@ -70,7 +70,9 @@ export const LessonConfirmation: React.FC<LessonConfirmationProps> = (props) => 
         const lesson = createLessonRoot.getLinkedRecord('lesson');
 
         const root = store.getRoot();
-        const events = ConnectionHandler.getConnection(root, 'EventList_events');
+        const events = ConnectionHandler.getConnection(root, 'EventList_events', {
+          searchTerm: '',
+        });
 
         if (!events) {
           return;

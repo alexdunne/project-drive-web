@@ -458,7 +458,9 @@ const CancelEventAction: React.FC<CancelEventActionProps> = (props) => {
         },
         updater: (store) => {
           const root = store.getRoot();
-          const events = ConnectionHandler.getConnection(root, 'EventList_events');
+          const events = ConnectionHandler.getConnection(root, 'EventList_events', {
+            searchTerm: '',
+          });
 
           if (!events) {
             return;
